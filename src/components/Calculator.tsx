@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calculator as CalcIcon, Package, ArrowRight, MessageCircle, X } from 'lucide-react';
+import { Calculator as CalcIcon, Package, ArrowRight, MessageCircle, X, Check } from 'lucide-react';
 
 interface CalculatorResult {
   price: number;
@@ -7,12 +7,21 @@ interface CalculatorResult {
   billableWeight: number;
 }
 
+const CARGO_LABELS: Record<string, string> = {
+  general: 'Обычный',
+  fragile: 'Хрупкий',
+  electronics: 'Электроника',
+  oversized: 'Негабарит',
+};
+
 const Calculator = () => {
   const [weight, setWeight] = useState('');
   const [volume, setVolume] = useState('');
   const [cargoType, setCargoType] = useState('general');
   const [showResult, setShowResult] = useState(false);
   const [result, setResult] = useState<CalculatorResult | null>(null);
+  const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState('');
 
   const calculatePrice = () => {
     const w = parseFloat(weight) || 0;
@@ -52,6 +61,31 @@ const Calculator = () => {
   const resetCalculator = () => {
     setShowResult(false);
     setResult(null);
+    setPhone('');
+    setPhoneError('');
+  };
+
+  const buildWhatsAppUrl = (withPhone: boolean) => {
+    const cargoLabel = CARGO_LABELS[cargoType] || cargoType;
+    const lines = [
+      'Здравствуйте! Сделал расчёт на сайте:',
+      `Вес: ${weight || '—'} кг | Объём: ${volume || '—'} м³ | Тип: ${cargoLabel}`,
+      `Стоимость: ~$${result?.price} | Срок: ${result?.days} дней`,
+    ];
+    if (withPhone && phone) {
+      lines.push(`Мой номер: ${phone}`);
+    }
+    const text = encodeURIComponent(lines.join('\n'));
+    return `https://api.whatsapp.com/send?phone=996990111125&text=${text}`;
+  };
+
+  const handleSendWithPhone = () => {
+    if (!phone.trim()) {
+      setPhoneError('Введите номер телефона');
+      return;
+    }
+    setPhoneError('');
+    window.open(buildWhatsAppUrl(true), '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -149,16 +183,39 @@ const Calculator = () => {
             </div>
           </div>
 
+          {/* Что включено */}
+          <div className="flex flex-col gap-1.5 mb-5">
+            {['Таможня включена', 'Страховка груза', 'Личный менеджер'].map((item) => (
+              <div key={item} className="flex items-center gap-2">
+                <Check className="w-3.5 h-3.5 text-[#4A90A4] shrink-0" />
+                <span className="text-xs text-[#A9B1BA]">{item}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Захват лида */}
+          <div className="mb-3">
+            <label className="mono-label text-[#A9B1BA] block mb-2">Ваш телефон или WhatsApp</label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => { setPhone(e.target.value); setPhoneError(''); }}
+              placeholder="+996 ___ __ __ __"
+              className="input-field text-sm w-full"
+            />
+            {phoneError && (
+              <p className="text-xs text-red-400 mt-1">{phoneError}</p>
+            )}
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-3">
-            <a
-              href="https://api.whatsapp.com/send?phone=996990111125&text="
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={handleSendWithPhone}
               className="btn-primary flex-1 text-sm"
             >
               <MessageCircle className="w-4 h-4 mr-2" />
-              Получить точный расчёт
-            </a>
+              Отправить расчёт в WhatsApp
+            </button>
             <button
               onClick={resetCalculator}
               className="btn-outline text-sm"
@@ -168,8 +225,24 @@ const Calculator = () => {
             </button>
           </div>
 
+          <div className="flex items-center gap-3 mt-3">
+            <div className="h-px flex-1 bg-[rgba(244,246,248,0.06)]" />
+            <span className="text-xs text-[#A9B1BA]">или</span>
+            <div className="h-px flex-1 bg-[rgba(244,246,248,0.06)]" />
+          </div>
+
+          <a
+            href={buildWhatsAppUrl(false)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs text-[#A9B1BA] hover:text-[#4A90A4] transition-colors mt-2"
+          >
+            <ArrowRight className="w-3.5 h-3.5" />
+            Написать в WhatsApp без номера
+          </a>
+
           <p className="text-xs text-[#A9B1BA] mt-4 text-center">
-            * Точная стоимость зависит от характеристик груза и текущих тарифов
+            * Расчёт предварительный. Таможенные сборы включены.
           </p>
         </div>
       )}
