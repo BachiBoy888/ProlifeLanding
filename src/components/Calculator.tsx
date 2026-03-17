@@ -14,21 +14,35 @@ import {
   FileText,
 } from 'lucide-react';
 
-// Коэффициент объёмного веса (стандартный для авто/ж-д)
-const VOLUMETRIC_FACTOR = 167;
+// Пороги плотности для выбора базы расчёта (кг/м³)
+const DENSITY_LOW = 200;   // ниже → считать по м³
+const DENSITY_HIGH = 250;  // выше → считать по кг
+const MIN_PRICE = 150;     // минимальная стоимость заявки ($)
+
+// Надбавка по точке сбора ($)
+const CITY_SURCHARGE: Record<string, number> = {
+  'Гуанчжоу': 0,
+  'Фошань': 0,
+  'Дунгуань': 0,
+  'Шэньчжэнь': 15,
+  'Иу': 30,
+  'Другой город': 40,
+};
 
 const PACKAGES = [
   {
     id: 'economy' as const,
     name: 'Эконом',
-    rate: 2.9,
+    rateKg: 0.55,   // $ за кг
+    rateM3: 145,    // $ за м³
     days: '14–18 дней',
     features: ['Автодоставка', 'Таможня включена', 'Трекинг груза'],
   },
   {
     id: 'standard' as const,
     name: 'Стандарт',
-    rate: 3.1,
+    rateKg: 0.70,
+    rateM3: 165,
     days: '12–15 дней',
     features: ['Авто + ж/д', 'Таможня включена', 'Страховка груза', 'Трекинг груза'],
     popular: true,
@@ -36,7 +50,8 @@ const PACKAGES = [
   {
     id: 'premium' as const,
     name: 'Премиум',
-    rate: 3.5,
+    rateKg: 0.90,
+    rateM3: 185,
     days: '10–12 дней',
     features: ['Приоритетный маршрут', 'Таможня включена', 'Страховка груза', 'Личный менеджер 24/7'],
   },
@@ -84,10 +99,46 @@ const Calculator = () => {
   const calcResult = () => {
     const w = parseFloat(form.weight) || 0;
     const v = parseFloat(form.volume) || 0;
-    const volWeight = v * VOLUMETRIC_FACTOR;
-    const billable = Math.max(w, volWeight);
-    const price = Math.round(billable * selectedPackage.rate);
-    return { billable: Math.round(billable * 10) / 10, price };
+    const pkg = selectedPackage;
+
+    const byKg = w * pkg.rateKg;
+    const byM3 = v * pkg.rateM3;
+
+    // Определяем базу расчёта по плотности груза
+    let base: 'kg' | 'm3' | 'max';
+    let rawPrice: number;
+
+    if (w > 0 && v > 0) {
+      const density = w / v;
+      if (density < DENSITY_LOW) {
+        base = 'm3';
+        rawPrice = byM3;
+      } else if (density > DENSITY_HIGH) {
+        base = 'kg';
+        rawPrice = byKg;
+      } else {
+        base = 'max';
+        rawPrice = Math.max(byKg, byM3);
+      }
+    } else if (w > 0) {
+      base = 'kg';
+      rawPrice = byKg;
+    } else {
+      base = 'm3';
+      rawPrice = byM3;
+    }
+
+    const surcharge = CITY_SURCHARGE[form.city] ?? 0;
+    const price = Math.max(Math.round(rawPrice + surcharge), MIN_PRICE);
+
+    return {
+      price,
+      base,
+      byKg: Math.round(byKg),
+      byM3: Math.round(byM3),
+      density: v > 0 && w > 0 ? Math.round(w / v) : null,
+      surcharge,
+    };
   };
 
   const openModal = () => {
@@ -110,7 +161,7 @@ const Calculator = () => {
       `• Вес: ${form.weight || '—'} кг`,
       `• Объём: ${form.volume || '—'} м³`,
       `• Точка сбора: ${form.city}`,
-      `• Пакет: ${selectedPackage.name} ($${selectedPackage.rate}/кг)`,
+      `• Пакет: ${selectedPackage.name} ($${selectedPackage.rateKg}/кг · $${selectedPackage.rateM3}/м³)`,
       `• Предв. стоимость: ~$${result.price}`,
       '',
       'Контакты:',
@@ -242,7 +293,7 @@ const Calculator = () => {
                       )}
                       <div className="flex items-center justify-between mb-1.5 pr-24">
                         <span className="font-display font-semibold text-[#F4F6F8] text-sm">{pkg.name}</span>
-                        <span className="font-mono font-bold text-[#4A90A4] text-sm">${pkg.rate}/кг</span>
+                        <span className="font-mono font-bold text-[#4A90A4] text-sm">${pkg.rateKg}/кг · ${pkg.rateM3}/м³</span>
                       </div>
                       <p className="text-xs text-[#A9B1BA] mb-2">{pkg.days}</p>
                       <div className="flex flex-wrap gap-x-3 gap-y-1">
@@ -267,7 +318,7 @@ const Calculator = () => {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </button>
               <p className="text-xs text-[#A9B1BA] text-center">
-                * 1 м³ = {VOLUMETRIC_FACTOR} кг (коэффициент объёмного веса)
+                * Расчёт по плотности: плотность = вес ÷ объём (кг/м³)
               </p>
             </div>
           )}
@@ -275,18 +326,14 @@ const Calculator = () => {
           {/* ── ШАГ 2: РЕЗУЛЬТАТ ── */}
           {step === 'result' && result && (
             <div className="space-y-5">
-              <div className="grid grid-cols-3 gap-3">
-                <div className="bg-[#0B0C10] rounded-lg p-3 text-center">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-[#0B0C10] rounded-lg p-3 text-center col-span-1">
                   <p className="mono-label text-[#A9B1BA] mb-1">Стоимость</p>
-                  <p className="font-display font-bold text-xl text-[#4A90A4]">~${result.price}</p>
+                  <p className="font-display font-bold text-2xl text-[#4A90A4]">~${result.price}</p>
                 </div>
-                <div className="bg-[#0B0C10] rounded-lg p-3 text-center">
+                <div className="bg-[#0B0C10] rounded-lg p-3 text-center col-span-1">
                   <p className="mono-label text-[#A9B1BA] mb-1">Срок</p>
                   <p className="font-display font-bold text-sm text-[#F4F6F8] leading-tight mt-1">{selectedPackage.days}</p>
-                </div>
-                <div className="bg-[#0B0C10] rounded-lg p-3 text-center">
-                  <p className="mono-label text-[#A9B1BA] mb-1">Расч. вес</p>
-                  <p className="font-display font-bold text-xl text-[#F4F6F8]">{result.billable} кг</p>
                 </div>
               </div>
 
@@ -295,7 +342,7 @@ const Calculator = () => {
                   <span className="font-display font-semibold text-[#F4F6F8] text-sm">
                     Пакет: {selectedPackage.name}
                   </span>
-                  <span className="font-mono text-[#4A90A4] text-sm">${selectedPackage.rate}/кг</span>
+                  <span className="font-mono text-[#4A90A4] text-xs">${selectedPackage.rateKg}/кг · ${selectedPackage.rateM3}/м³</span>
                 </div>
                 <div className="flex flex-wrap gap-x-3 gap-y-1">
                   {selectedPackage.features.map((f) => (
@@ -309,19 +356,35 @@ const Calculator = () => {
 
               <div className="bg-[#0B0C10] rounded-lg p-4 space-y-1.5">
                 <p className="mono-label text-[#A9B1BA]">Как посчитано:</p>
-                {parseFloat(form.volume) > 0 && (
+                {result.density !== null && (
                   <p className="text-xs text-[#A9B1BA]">
-                    Объёмный вес: {form.volume} × {VOLUMETRIC_FACTOR} ={' '}
-                    {Math.round(parseFloat(form.volume) * VOLUMETRIC_FACTOR * 10) / 10} кг
+                    Плотность: {form.weight} / {form.volume} = {result.density} кг/м³
+                    {result.base === 'kg' && ' → тарифицируем по кг'}
+                    {result.base === 'm3' && ' → тарифицируем по м³'}
+                    {result.base === 'max' && ' → берём большее из двух'}
                   </p>
                 )}
                 <p className="text-xs text-[#A9B1BA]">
-                  Расчётный вес: max({form.weight || 0},{' '}
-                  {parseFloat(form.volume) ? Math.round(parseFloat(form.volume) * VOLUMETRIC_FACTOR * 10) / 10 : 0}
-                  ) = {result.billable} кг
+                  По кг: {form.weight || 0} × ${selectedPackage.rateKg} = ${result.byKg}
                 </p>
+                {parseFloat(form.volume) > 0 && (
+                  <p className="text-xs text-[#A9B1BA]">
+                    По м³: {form.volume} × ${selectedPackage.rateM3} = ${result.byM3}
+                  </p>
+                )}
+                {result.surcharge > 0 && (
+                  <p className="text-xs text-[#A9B1BA]">
+                    Надбавка ({form.city}): +${result.surcharge}
+                  </p>
+                )}
                 <p className="text-xs text-[#F4F6F8] font-medium">
-                  Итого: {result.billable} × ${selectedPackage.rate} = ~${result.price}
+                  Итого:{' '}
+                  {result.base === 'kg' && `$${result.byKg}`}
+                  {result.base === 'm3' && `$${result.byM3}`}
+                  {result.base === 'max' && `max($${result.byKg}, $${result.byM3}) = $${Math.max(result.byKg, result.byM3)}`}
+                  {result.surcharge > 0 && ` + $${result.surcharge}`}
+                  {' '}= ~${result.price}
+                  {result.price === MIN_PRICE && ' (минимальная стоимость)'}
                 </p>
               </div>
 
