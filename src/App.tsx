@@ -21,8 +21,8 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 function App() {
   // Slide navigation for pinned sections
   useEffect(() => {
-    const SLIDE_DURATION = 1.25;  // секунды — длительность анимированного перехода
-    const LOCK_MS = 1400;         // чуть дольше SLIDE_DURATION, чтобы не двойной триггер
+    const SLIDE_DURATION = 0.9;   // секунды — длительность анимированного перехода
+    const LOCK_MS = 1050;         // чуть дольше SLIDE_DURATION, чтобы не двойной триггер
     const EXIT_BUFFER = 60;       // px ниже maxPinned, где ещё перехватываем wheel
 
     let isLocked = false;
