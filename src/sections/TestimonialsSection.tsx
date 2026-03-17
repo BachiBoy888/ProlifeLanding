@@ -134,10 +134,10 @@ const TestimonialsSection = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-12">
           {[
-            { value: '9+', label: 'Лет на рынке' },
+            { value: '2015', label: 'Год основания' },
             { value: '5000+', label: 'Доставленных грузов' },
             { value: '98%', label: 'Довольных клиентов' },
-            { value: '12', label: 'Дней средний срок' },
+            { value: '12 дн', label: 'Средний срок доставки' },
           ].map((stat) => (
             <div key={stat.label} className="text-center p-5 bg-[#0B0C10] rounded-lg">
               <p className="font-display text-2xl lg:text-3xl font-bold text-[#4A90A4] mb-1">
