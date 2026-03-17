@@ -43,9 +43,14 @@ const Header = () => {
             {/* Logo */}
             <button
               onClick={() => scrollToSection('hero')}
-              className="font-mono text-sm tracking-[0.2em] text-[#F4F6F8] hover:text-[#4A90A4] transition-colors"
+              className="shrink-0 opacity-90 hover:opacity-100 transition-opacity"
+              aria-label="Prolife — на главную"
             >
-              PROLIFE
+              <img
+                src="/logo.png"
+                alt="Prolife Logistics"
+                className="h-7 lg:h-8 w-auto"
+              />
             </button>
 
             {/* Desktop Navigation */}

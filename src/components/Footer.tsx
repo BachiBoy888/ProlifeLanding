@@ -6,8 +6,12 @@ const Footer = () => {
       <div className="px-6 lg:px-[7vw]">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
           {/* Logo */}
-          <div className="font-mono text-sm tracking-[0.2em] text-[#F4F6F8]">
-            PROLIFE
+          <div className="opacity-70">
+            <img
+              src="/logo.png"
+              alt="Prolife Logistics"
+              className="h-6 w-auto"
+            />
           </div>
 
           {/* Copyright */}
