@@ -1,7 +1,6 @@
 import { useEffect, useRef, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight } from 'lucide-react';
 import Calculator from '../components/Calculator';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -179,25 +178,27 @@ const HeroSection = () => {
         {/* Headline */}
         <div
           ref={headlineRef}
-          className="mb-6 lg:mb-8"
-          style={{ maxWidth: '44vw' }}
+          className="mb-6 lg:mb-8 lg:max-w-[44vw]"
         >
-          <div className="hero-headline text-[#F4F6F8] leading-[0.88]">
-            <div className="headline-line">ГРУЗО</div>
-            <div className="headline-line">ПЕРЕ</div>
-            <div className="headline-line text-[#4A90A4]">ВОЗКИ</div>
+          <div className="hero-headline text-[#F4F6F8] leading-[0.88]" style={{ fontSize: 'clamp(40px, 7vw, 108px)' }}>
+            <div className="headline-line">ДОСТАВКА</div>
+            <div className="headline-line">ИЗ КИТАЯ</div>
+            <div className="headline-line text-[#4A90A4]">ЗА 12 ДНЕЙ</div>
           </div>
         </div>
 
         {/* Subheadline */}
         <div
           ref={subheadlineRef}
-          className="mb-6 lg:mb-8"
-          style={{ maxWidth: '44vw' }}
+          className="mb-6 lg:mb-8 lg:max-w-[44vw]"
         >
           <p className="mono-label text-[#A9B1BA]">
-            ДОСТАВКА ИЗ КИТАЯ В БИШКЕК / ОТ 12 ДНЕЙ / ТАМОЖНЯ ВКЛЮЧЕНА
+            В БИШКЕК · ТАМОЖНЯ ВКЛЮЧЕНА · ЛИЧНЫЙ МЕНЕДЖЕР 24/7
           </p>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="w-2 h-2 rounded-full bg-green-400 shrink-0" />
+            <span className="font-mono text-xs text-[#A9B1BA]">Ближайшая отправка — 24 марта</span>
+          </div>
         </div>
 
         {/* Calculator Panel */}
@@ -208,18 +209,8 @@ const HeroSection = () => {
           <Calculator />
         </div>
 
-        {/* Secondary CTA */}
-        <div ref={ctaRef} style={{ maxWidth: '44vw' }}>
-          <a
-            href="https://api.whatsapp.com/send?phone=996990111125&text="
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center text-sm text-[#A9B1BA] hover:text-[#4A90A4] transition-colors"
-          >
-            Или написать в WhatsApp
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </a>
-        </div>
+        {/* Spacer ref for GSAP exit animation */}
+        <div ref={ctaRef} />
       </div>
     </section>
   );
