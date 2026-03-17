@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import './App.css';
 
 import Header from './components/Header';
@@ -15,16 +16,18 @@ import ServicesSection from './sections/ServicesSection';
 import TestimonialsSection from './sections/TestimonialsSection';
 import ContactSection from './sections/ContactSection';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 function App() {
   // Slide navigation for pinned sections
   useEffect(() => {
-    const LOCK_MS = 650;          // минимальный интервал между переходами
+    const SLIDE_DURATION = 0.85;  // секунды — длительность анимированного перехода
+    const LOCK_MS = 950;          // чуть дольше SLIDE_DURATION, чтобы не двойной триггер
     const EXIT_BUFFER = 60;       // px ниже maxPinned, где ещё перехватываем wheel
 
     let isLocked = false;
     let lockTimer: ReturnType<typeof setTimeout> | null = null;
+    let currentTween: gsap.core.Tween | null = null;
     let wheelHandler: ((e: WheelEvent) => void) | null = null;
     let keyHandler: ((e: KeyboardEvent) => void) | null = null;
 
@@ -60,12 +63,23 @@ function App() {
       const goTo = (index: number) => {
         if (isLocked || index < 0 || index >= settled.length) return;
         lock();
-        window.scrollTo(0, settled[index]);
+        if (currentTween) currentTween.kill();
+        // Плавный анимированный переход — GSAP ScrollToPlugin
+        currentTween = gsap.to(window, {
+          scrollTo: { y: settled[index], autoKill: false },
+          duration: SLIDE_DURATION,
+          ease: 'power2.inOut',
+        });
       };
 
       const exitToFlowing = () => {
         lock();
-        window.scrollTo(0, maxPinned + EXIT_BUFFER + 1);
+        if (currentTween) currentTween.kill();
+        currentTween = gsap.to(window, {
+          scrollTo: { y: maxPinned + EXIT_BUFFER + 1, autoKill: false },
+          duration: SLIDE_DURATION,
+          ease: 'power2.inOut',
+        });
       };
 
       wheelHandler = (e: WheelEvent) => {
@@ -113,6 +127,7 @@ function App() {
     return () => {
       clearTimeout(initTimer);
       if (lockTimer) clearTimeout(lockTimer);
+      if (currentTween) currentTween.kill();
       if (wheelHandler) window.removeEventListener('wheel', wheelHandler);
       if (keyHandler) window.removeEventListener('keydown', keyHandler);
     };
@@ -129,7 +144,7 @@ function App() {
     <div className="relative bg-[#0B0C10] min-h-screen">
       {/* Grain overlay */}
       <div className="grain-overlay" />
-      
+
       {/* Header */}
       <Header />
 
@@ -141,7 +156,7 @@ function App() {
         <CoverageSection />
         <TrustSection />
         <SafetySection />
-        
+
         {/* Flowing sections */}
         <HowItWorksSection />
         <ServicesSection />
