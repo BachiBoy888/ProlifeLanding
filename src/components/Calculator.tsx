@@ -189,14 +189,14 @@ const Calculator = () => {
       onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
     >
       <div
-        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border border-white/[0.12] bg-[#12141A]"
-        style={{ boxShadow: '0 32px 100px rgba(0,0,0,0.8), 0 0 0 1px rgba(74,144,164,0.08)' }}
+        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border border-white/[0.2] bg-[#1A1D27]"
+        style={{ boxShadow: '0 0 0 1px rgba(74,144,164,0.15), 0 24px 80px rgba(0,0,0,0.85), 0 8px 32px rgba(0,0,0,0.6)' }}
       >
         {/* Шапка модального окна */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-5 border-b border-white/[0.07] bg-[#12141A]">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-3.5 border-b border-white/[0.1] bg-[#1A1D27]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-md bg-[#4A90A4]/20 flex items-center justify-center">
-              <CalcIcon className="w-5 h-5 text-[#4A90A4]" />
+            <div className="w-9 h-9 rounded-md bg-[#4A90A4]/20 flex items-center justify-center">
+              <CalcIcon className="w-4 h-4 text-[#4A90A4]" />
             </div>
             <div>
               <h3 className="font-display font-semibold text-[#F4F6F8] text-base">
@@ -229,11 +229,11 @@ const Calculator = () => {
         </div>
 
         {/* Тело модального окна */}
-        <div className="p-7">
+        <div className="p-5">
 
           {/* ── ШАГ 1: ФОРМА ── */}
           {step === 'form' && (
-            <div className="space-y-5">
+            <div className="space-y-3.5">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="mono-label text-[#C8D0D8] block mb-2">Вес, кг</label>
@@ -275,33 +275,33 @@ const Calculator = () => {
 
               <div>
                 <label className="mono-label text-[#C8D0D8] block mb-3">Пакет доставки</label>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1.5">
                   {PACKAGES.map((pkg) => (
                     <button
                       key={pkg.id}
                       onClick={() => setForm({ ...form, packageId: pkg.id })}
-                      className={`relative text-left rounded-lg border p-5 transition-all duration-200 ${
+                      className={`relative text-left rounded-lg border p-3.5 transition-all duration-200 ${
                         form.packageId === pkg.id
                           ? 'border-[#4A90A4] bg-[#4A90A4]/[0.12] shadow-[0_0_0_1px_rgba(74,144,164,0.25)]'
-                          : 'border-white/10 bg-[#0D0F14] hover:border-white/25 hover:bg-[#0F1117]'
+                          : 'border-white/10 bg-[#141720] hover:border-white/25 hover:bg-[#1E2130]'
                       }`}
                     >
                       {'popular' in pkg && (
-                        <span className="absolute top-3 right-3 text-[10px] font-mono bg-[#4A90A4]/20 text-[#4A90A4] px-2 py-0.5 rounded-full">
+                        <span className="absolute top-2.5 right-3 text-[10px] font-mono bg-[#4A90A4]/20 text-[#4A90A4] px-2 py-0.5 rounded-full">
                           Популярный
                         </span>
                       )}
-                      <div className="flex items-start justify-between mb-2 pr-24">
+                      <div className="flex items-start justify-between mb-1.5 pr-24">
                         <span className="font-display font-semibold text-[#F4F6F8] text-base">{pkg.name}</span>
                         <span className="font-mono font-bold text-[#4A90A4] text-sm leading-tight text-right">
                           ${pkg.rateKg}/кг<br />${pkg.rateM3}/м³
                         </span>
                       </div>
-                      <p className="text-sm text-[#C8D0D8] mb-2.5">{pkg.days}</p>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                      <p className="text-xs text-[#C8D0D8] mb-1.5">{pkg.days}</p>
+                      <div className="flex flex-wrap gap-x-3 gap-y-1">
                         {pkg.features.map((f) => (
-                          <span key={f} className="flex items-center gap-1.5 text-xs text-[#A9B1BA]">
-                            <Check className="w-3.5 h-3.5 text-[#4A90A4] shrink-0" />
+                          <span key={f} className="flex items-center gap-1 text-xs text-[#A9B1BA]">
+                            <Check className="w-3 h-3 text-[#4A90A4] shrink-0" />
                             {f}
                           </span>
                         ))}
@@ -314,10 +314,10 @@ const Calculator = () => {
               <button
                 onClick={() => setStep('result')}
                 disabled={!form.weight && !form.volume}
-                className="btn-primary w-full py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-primary w-full py-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Рассчитать стоимость
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="w-4 h-4 ml-2" />
               </button>
               <p className="text-xs text-[#A9B1BA] text-center">
                 * Расчёт по плотности: плотность = вес ÷ объём (кг/м³)
@@ -327,13 +327,13 @@ const Calculator = () => {
 
           {/* ── ШАГ 2: РЕЗУЛЬТАТ ── */}
           {step === 'result' && result && (
-            <div className="space-y-5">
+            <div className="space-y-3.5">
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-[#0B0C10] rounded-lg p-3 text-center col-span-1">
+                <div className="bg-[#13151E] rounded-lg p-3 text-center col-span-1">
                   <p className="mono-label text-[#A9B1BA] mb-1">Стоимость</p>
                   <p className="font-display font-bold text-2xl text-[#4A90A4]">~${result.price}</p>
                 </div>
-                <div className="bg-[#0B0C10] rounded-lg p-3 text-center col-span-1">
+                <div className="bg-[#13151E] rounded-lg p-3 text-center col-span-1">
                   <p className="mono-label text-[#A9B1BA] mb-1">Срок</p>
                   <p className="font-display font-bold text-sm text-[#F4F6F8] leading-tight mt-1">{selectedPackage.days}</p>
                 </div>
@@ -356,7 +356,7 @@ const Calculator = () => {
                 </div>
               </div>
 
-              <div className="bg-[#0B0C10] rounded-lg p-4 space-y-1.5">
+              <div className="bg-[#13151E] rounded-lg p-4 space-y-1.5">
                 <p className="mono-label text-[#A9B1BA]">Как посчитано:</p>
                 {result.density !== null && (
                   <p className="text-xs text-[#A9B1BA]">
@@ -407,7 +407,7 @@ const Calculator = () => {
 
           {/* ── ШАГ 3: КОНТАКТЫ ── */}
           {step === 'contact' && (
-            <div className="space-y-4">
+            <div className="space-y-3.5">
               <p className="text-sm text-[#C8D0D8] leading-relaxed">
                 Оставьте контакты — менеджер свяжется в течение часа и подтвердит точную стоимость.
               </p>
@@ -476,9 +476,9 @@ const Calculator = () => {
               <button
                 onClick={handleSendRequest}
                 disabled={!contact.phone.trim()}
-                className="btn-primary w-full py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-primary w-full py-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <MessageCircle className="w-5 h-5 mr-2" />
+                <MessageCircle className="w-4 h-4 mr-2" />
                 Отправить заявку
               </button>
               <p className="text-xs text-[#A9B1BA] text-center">* Обязательно только телефон</p>
