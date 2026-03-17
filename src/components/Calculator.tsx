@@ -189,17 +189,17 @@ const Calculator = () => {
       onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
     >
       <div
-        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl border border-white/10 bg-[#0F1117]"
-        style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
+        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border border-white/[0.12] bg-[#12141A]"
+        style={{ boxShadow: '0 32px 100px rgba(0,0,0,0.8), 0 0 0 1px rgba(74,144,164,0.08)' }}
       >
         {/* Шапка модального окна */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0F1117]">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-5 border-b border-white/[0.07] bg-[#12141A]">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-md bg-[#4A90A4]/20 flex items-center justify-center">
-              <CalcIcon className="w-4 h-4 text-[#4A90A4]" />
+            <div className="w-10 h-10 rounded-md bg-[#4A90A4]/20 flex items-center justify-center">
+              <CalcIcon className="w-5 h-5 text-[#4A90A4]" />
             </div>
             <div>
-              <h3 className="font-display font-semibold text-[#F4F6F8] text-sm">
+              <h3 className="font-display font-semibold text-[#F4F6F8] text-base">
                 {step === 'form' && 'Расчёт стоимости'}
                 {step === 'result' && 'Предварительный расчёт'}
                 {step === 'contact' && 'Контактные данные'}
@@ -229,14 +229,14 @@ const Calculator = () => {
         </div>
 
         {/* Тело модального окна */}
-        <div className="p-6">
+        <div className="p-7">
 
           {/* ── ШАГ 1: ФОРМА ── */}
           {step === 'form' && (
             <div className="space-y-5">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mono-label text-[#A9B1BA] block mb-2">Вес, кг</label>
+                  <label className="mono-label text-[#C8D0D8] block mb-2">Вес, кг</label>
                   <input
                     type="number"
                     value={form.weight}
@@ -247,7 +247,7 @@ const Calculator = () => {
                   />
                 </div>
                 <div>
-                  <label className="mono-label text-[#A9B1BA] block mb-2">Объём, м³</label>
+                  <label className="mono-label text-[#C8D0D8] block mb-2">Объём, м³</label>
                   <input
                     type="number"
                     value={form.volume}
@@ -261,7 +261,7 @@ const Calculator = () => {
               </div>
 
               <div>
-                <label className="mono-label text-[#A9B1BA] block mb-2">Точка сбора груза</label>
+                <label className="mono-label text-[#C8D0D8] block mb-2">Точка сбора груза</label>
                 <select
                   value={form.city}
                   onChange={(e) => setForm({ ...form, city: e.target.value })}
@@ -274,16 +274,16 @@ const Calculator = () => {
               </div>
 
               <div>
-                <label className="mono-label text-[#A9B1BA] block mb-3">Пакет доставки</label>
+                <label className="mono-label text-[#C8D0D8] block mb-3">Пакет доставки</label>
                 <div className="flex flex-col gap-2">
                   {PACKAGES.map((pkg) => (
                     <button
                       key={pkg.id}
                       onClick={() => setForm({ ...form, packageId: pkg.id })}
-                      className={`relative text-left rounded-lg border p-4 transition-all duration-200 ${
+                      className={`relative text-left rounded-lg border p-5 transition-all duration-200 ${
                         form.packageId === pkg.id
-                          ? 'border-[#4A90A4] bg-[#4A90A4]/10'
-                          : 'border-white/10 bg-[#0B0C10] hover:border-white/20'
+                          ? 'border-[#4A90A4] bg-[#4A90A4]/[0.12] shadow-[0_0_0_1px_rgba(74,144,164,0.25)]'
+                          : 'border-white/10 bg-[#0D0F14] hover:border-white/25 hover:bg-[#0F1117]'
                       }`}
                     >
                       {'popular' in pkg && (
@@ -291,15 +291,17 @@ const Calculator = () => {
                           Популярный
                         </span>
                       )}
-                      <div className="flex items-center justify-between mb-1.5 pr-24">
-                        <span className="font-display font-semibold text-[#F4F6F8] text-sm">{pkg.name}</span>
-                        <span className="font-mono font-bold text-[#4A90A4] text-sm">${pkg.rateKg}/кг · ${pkg.rateM3}/м³</span>
+                      <div className="flex items-start justify-between mb-2 pr-24">
+                        <span className="font-display font-semibold text-[#F4F6F8] text-base">{pkg.name}</span>
+                        <span className="font-mono font-bold text-[#4A90A4] text-sm leading-tight text-right">
+                          ${pkg.rateKg}/кг<br />${pkg.rateM3}/м³
+                        </span>
                       </div>
-                      <p className="text-xs text-[#A9B1BA] mb-2">{pkg.days}</p>
-                      <div className="flex flex-wrap gap-x-3 gap-y-1">
+                      <p className="text-sm text-[#C8D0D8] mb-2.5">{pkg.days}</p>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1.5">
                         {pkg.features.map((f) => (
-                          <span key={f} className="flex items-center gap-1 text-xs text-[#A9B1BA]">
-                            <Check className="w-3 h-3 text-[#4A90A4] shrink-0" />
+                          <span key={f} className="flex items-center gap-1.5 text-xs text-[#A9B1BA]">
+                            <Check className="w-3.5 h-3.5 text-[#4A90A4] shrink-0" />
                             {f}
                           </span>
                         ))}
@@ -312,10 +314,10 @@ const Calculator = () => {
               <button
                 onClick={() => setStep('result')}
                 disabled={!form.weight && !form.volume}
-                className="btn-primary w-full text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-primary w-full py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Рассчитать стоимость
-                <ArrowRight className="w-4 h-4 ml-2" />
+                <ArrowRight className="w-5 h-5 ml-2" />
               </button>
               <p className="text-xs text-[#A9B1BA] text-center">
                 * Расчёт по плотности: плотность = вес ÷ объём (кг/м³)
@@ -406,12 +408,12 @@ const Calculator = () => {
           {/* ── ШАГ 3: КОНТАКТЫ ── */}
           {step === 'contact' && (
             <div className="space-y-4">
-              <p className="text-sm text-[#A9B1BA] leading-relaxed">
+              <p className="text-sm text-[#C8D0D8] leading-relaxed">
                 Оставьте контакты — менеджер свяжется в течение часа и подтвердит точную стоимость.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="mono-label text-[#A9B1BA] flex items-center gap-1 mb-2">
+                  <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-2">
                     <User className="w-3 h-3" />Имя
                   </label>
                   <input
@@ -423,7 +425,7 @@ const Calculator = () => {
                   />
                 </div>
                 <div>
-                  <label className="mono-label text-[#A9B1BA] flex items-center gap-1 mb-2">
+                  <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-2">
                     <Phone className="w-3 h-3" />Телефон *
                   </label>
                   <input
@@ -435,7 +437,7 @@ const Calculator = () => {
                   />
                 </div>
                 <div>
-                  <label className="mono-label text-[#A9B1BA] flex items-center gap-1 mb-2">
+                  <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-2">
                     <Building2 className="w-3 h-3" />Компания
                   </label>
                   <input
@@ -447,7 +449,7 @@ const Calculator = () => {
                   />
                 </div>
                 <div>
-                  <label className="mono-label text-[#A9B1BA] flex items-center gap-1 mb-2">
+                  <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-2">
                     <Mail className="w-3 h-3" />Email
                   </label>
                   <input
@@ -460,7 +462,7 @@ const Calculator = () => {
                 </div>
               </div>
               <div>
-                <label className="mono-label text-[#A9B1BA] flex items-center gap-1 mb-2">
+                <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-2">
                   <FileText className="w-3 h-3" />Примечание
                 </label>
                 <textarea
@@ -474,9 +476,9 @@ const Calculator = () => {
               <button
                 onClick={handleSendRequest}
                 disabled={!contact.phone.trim()}
-                className="btn-primary w-full text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-primary w-full py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <MessageCircle className="w-4 h-4 mr-2" />
+                <MessageCircle className="w-5 h-5 mr-2" />
                 Отправить заявку
               </button>
               <p className="text-xs text-[#A9B1BA] text-center">* Обязательно только телефон</p>
