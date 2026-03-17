@@ -77,7 +77,7 @@ const HeroSection = () => {
           start: 'top top',
           end: '+=130%',
           pin: true,
-          scrub: 0.6,
+          scrub: 0.3,
           onLeaveBack: () => {
             // Reset all elements to visible when scrolling back to top
             gsap.set([headlineRef.current, imageRef.current, calculatorRef.current, subheadlineRef.current, ctaRef.current], {

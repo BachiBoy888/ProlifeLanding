@@ -22,7 +22,7 @@ const SpeedSection = () => {
           start: 'top top',
           end: '+=130%',
           pin: true,
-          scrub: 0.6,
+          scrub: 0.3,
         },
       });
 
