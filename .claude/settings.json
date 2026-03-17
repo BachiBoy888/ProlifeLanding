@@ -1,0 +1,16 @@
+{
+  "projectDescription": "ProlifeLanding — коммерческий landing page для доставки грузов из Китая в Бишкек",
+  "language": "ru",
+  "permissions": {
+    "allow": [
+      "Bash(npm run build)",
+      "Bash(npm run dev)",
+      "Bash(git status)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git checkout*)",
+      "Bash(git push*)",
+      "Bash(git branch*)"
+    ]
+  }
+}
