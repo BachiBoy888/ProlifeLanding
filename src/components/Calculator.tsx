@@ -12,6 +12,7 @@ import {
   Mail,
   Phone,
   FileText,
+  AlertCircle,
 } from 'lucide-react';
 
 // Пороги плотности для выбора базы расчёта (кг/м³)
@@ -33,9 +34,11 @@ const PACKAGES = [
   {
     id: 'economy' as const,
     name: 'Эконом',
-    rateKg: 0.55,   // $ за кг
-    rateM3: 145,    // $ за м³
+    rateKg: 0.55,
+    rateM3: 145,
     days: '14–18 дней',
+    daysMin: 14,
+    daysMax: 18,
     features: ['Автодоставка', 'Таможня включена', 'Трекинг груза'],
   },
   {
@@ -44,6 +47,8 @@ const PACKAGES = [
     rateKg: 0.70,
     rateM3: 165,
     days: '12–15 дней',
+    daysMin: 12,
+    daysMax: 15,
     features: ['Авто + ж/д', 'Таможня включена', 'Страховка груза', 'Трекинг груза'],
     popular: true,
   },
@@ -53,6 +58,8 @@ const PACKAGES = [
     rateKg: 0.90,
     rateM3: 185,
     days: '10–12 дней',
+    daysMin: 10,
+    daysMax: 12,
     features: ['Приоритетный маршрут', 'Таможня включена', 'Страховка груза', 'Личный менеджер 24/7'],
   },
 ];
@@ -77,6 +84,8 @@ interface ContactData {
   note: string;
 }
 
+const API_URL = import.meta.env.VITE_API_URL ?? '';
+
 const Calculator = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState<Step>('form');
@@ -93,6 +102,8 @@ const Calculator = () => {
     email: '',
     note: '',
   });
+  const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const selectedPackage = PACKAGES.find((p) => p.id === form.packageId)!;
 
@@ -152,29 +163,65 @@ const Calculator = () => {
     document.body.style.overflow = '';
   };
 
-  const handleSendRequest = () => {
-    const result = calcResult();
-    const lines: string[] = [
-      '📦 Заявка с сайта Prolife Logistics',
-      '',
-      'Параметры груза:',
-      `• Вес: ${form.weight || '—'} кг`,
-      `• Объём: ${form.volume || '—'} м³`,
-      `• Точка сбора: ${form.city}`,
-      `• Пакет: ${selectedPackage.name} ($${selectedPackage.rateKg}/кг · $${selectedPackage.rateM3}/м³)`,
-      `• Предв. стоимость: ~$${result.price}`,
-      '',
-      'Контакты:',
-      `• Имя: ${contact.name || '—'}`,
-      `• Телефон: ${contact.phone || '—'}`,
-    ];
-    if (contact.company) lines.push(`• Компания: ${contact.company}`);
-    if (contact.email) lines.push(`• Email: ${contact.email}`);
-    if (contact.note) lines.push(`• Примечание: ${contact.note}`);
+  const handleSendRequest = async () => {
+    setLoading(true);
+    setSubmitError('');
 
-    const url = `https://api.whatsapp.com/send?phone=996990111125&text=${encodeURIComponent(lines.join('\n'))}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
-    setStep('success');
+    const result = calcResult();
+    const pkg = selectedPackage;
+
+    const payload = {
+      // Контактные данные
+      name: contact.name.trim() || undefined,
+      phone: contact.phone.trim(),
+      company: contact.company.trim() || undefined,
+      email: contact.email.trim() || undefined,
+      note: contact.note.trim() || undefined,
+
+      // Параметры груза
+      weight: parseFloat(form.weight) || undefined,
+      volume: parseFloat(form.volume) || undefined,
+      deliveryType: form.packageId,          // 'economy' | 'standard' | 'premium'
+      originCity: form.city,
+
+      // Предварительная оценка (фронтенд-расчёт)
+      estimatedPrice: result.price,
+      estimatedCurrency: 'USD',
+      estimatedDaysMin: pkg.daysMin,
+      estimatedDaysMax: pkg.daysMax,
+
+      // Honeypot — всегда пустая строка
+      website: '',
+    };
+
+    try {
+      const res = await fetch(`${API_URL}/api/leads`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Source': 'prolife_site',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        setStep('success');
+        return;
+      }
+
+      // Обработка конкретных статусов
+      if (res.status === 400) {
+        setSubmitError('Проверьте заполненные данные и попробуйте ещё раз.');
+      } else if (res.status === 429) {
+        setSubmitError('Слишком много запросов. Пожалуйста, подождите немного и повторите.');
+      } else {
+        setSubmitError('Ошибка на сервере. Попробуйте ещё раз или напишите нам напрямую.');
+      }
+    } catch {
+      setSubmitError('Не удалось отправить заявку. Проверьте соединение и попробуйте ещё раз.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const result = step !== 'form' ? calcResult() : null;
@@ -473,13 +520,31 @@ const Calculator = () => {
                   rows={2}
                 />
               </div>
+
+              {/* Сообщение об ошибке */}
+              {submitError && (
+                <div className="flex items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3">
+                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                  <p className="text-xs text-red-300 leading-relaxed">{submitError}</p>
+                </div>
+              )}
+
               <button
                 onClick={handleSendRequest}
-                disabled={!contact.phone.trim()}
+                disabled={!contact.phone.trim() || loading}
                 className="btn-primary w-full py-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Отправить заявку
+                {loading ? (
+                  <>
+                    <span className="w-4 h-4 mr-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Отправка...
+                  </>
+                ) : (
+                  <>
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Отправить заявку
+                  </>
+                )}
               </button>
               <p className="text-xs text-[#A9B1BA] text-center">* Обязательно только телефон</p>
             </div>
