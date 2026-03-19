@@ -153,8 +153,8 @@ const HeroSection = () => {
           width: '42vw',
           height: '80vh',
           backgroundImage: 'url(/hero-prolife.svg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundSize: '150%',
+          backgroundPosition: 'left center',
           backgroundRepeat: 'no-repeat',
         }}
       />
@@ -165,8 +165,8 @@ const HeroSection = () => {
           className="absolute inset-0 opacity-20"
           style={{
             backgroundImage: 'url(/hero-prolife.svg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundSize: '150%',
+            backgroundPosition: 'left center',
             backgroundRepeat: 'no-repeat',
           }}
         />
