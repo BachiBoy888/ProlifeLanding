@@ -1,29 +1,6 @@
-# Dependencies
 node_modules/
-
-# Build output
 dist/
-
-# Environment
+.vite/
+.DS_Store
 .env
 .env.local
-.env.*.local
-
-# Editor
-.vscode/
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Claude Code local settings
-.claude/settings.local.json
-
-# TypeScript build cache
-*.tsbuildinfo
