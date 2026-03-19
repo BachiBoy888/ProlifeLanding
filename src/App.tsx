@@ -103,6 +103,10 @@ function App() {
         const y = window.scrollY;
         if (y > maxPinned + EXIT_BUFFER) return;
 
+        // Do not intercept Space/Arrow keys while user is typing in a form field
+        const tag = (document.activeElement as HTMLElement)?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
         const i = getCurrentIndex();
         switch (e.key) {
           case 'ArrowDown':

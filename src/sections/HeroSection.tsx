@@ -155,20 +155,18 @@ const HeroSection = () => {
         }}
       >
         <img
-          src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&q=80"
-          alt="Cargo aircraft"
+          src="/hero-prolife.svg"
+          alt="Cargo delivery"
           className="w-full h-full object-cover rounded-md"
-          style={{ filter: 'saturate(0.5) contrast(1.1)' }}
         />
       </div>
 
       {/* Mobile background image */}
       <div className="absolute inset-0 lg:hidden">
         <img
-          src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80"
-          alt="Cargo aircraft"
+          src="/hero-prolife.svg"
+          alt="Cargo delivery"
           className="w-full h-full object-cover opacity-20"
-          style={{ filter: 'saturate(0.5) contrast(1.1)' }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-[#0B0C10]/80 to-transparent" />
       </div>

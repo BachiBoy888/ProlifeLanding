@@ -39,7 +39,7 @@ const PACKAGES = [
     days: '14–18 дней',
     daysMin: 14,
     daysMax: 18,
-    features: ['Автодоставка', 'Таможня включена', 'Трекинг груза'],
+    features: ['Автодоставка', 'Трекинг груза'],
   },
   {
     id: 'standard' as const,
@@ -49,7 +49,7 @@ const PACKAGES = [
     days: '12–15 дней',
     daysMin: 12,
     daysMax: 15,
-    features: ['Авто + ж/д', 'Таможня включена', 'Страховка груза', 'Трекинг груза'],
+    features: ['Авто + ж/д', 'Страховка груза', 'Трекинг груза'],
     popular: true,
   },
   {
@@ -60,7 +60,7 @@ const PACKAGES = [
     days: '10–12 дней',
     daysMin: 10,
     daysMax: 12,
-    features: ['Приоритетный маршрут', 'Таможня включена', 'Страховка груза', 'Личный менеджер 24/7'],
+    features: ['Приоритетный маршрут', 'Услуга по растаможке включена', 'Страховка груза', 'Личный менеджер 24/7'],
   },
 ];
 
@@ -97,7 +97,7 @@ const Calculator = () => {
   });
   const [contact, setContact] = useState<ContactData>({
     name: '',
-    phone: '',
+    phone: '+996',
     company: '',
     email: '',
     note: '',
@@ -478,7 +478,14 @@ const Calculator = () => {
                   <input
                     type="tel"
                     value={contact.phone}
-                    onChange={(e) => setContact({ ...contact, phone: e.target.value })}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      // Allow only digits and a single leading plus
+                      const filtered = raw.startsWith('+')
+                        ? '+' + raw.slice(1).replace(/[^\d]/g, '')
+                        : raw.replace(/[^\d]/g, '');
+                      setContact({ ...contact, phone: filtered });
+                    }}
                     placeholder="+996 ___ __ __ __"
                     className="input-field text-sm"
                   />
