@@ -146,29 +146,29 @@ const HeroSection = () => {
       {/* Hero Image (right side) */}
       <div
         ref={imageRef}
-        className="absolute hidden lg:block"
+        className="absolute hidden lg:block rounded-md overflow-hidden"
         style={{
           left: '52vw',
           top: '10vh',
           width: '42vw',
           height: '80vh',
+          backgroundImage: 'url(/hero-prolife.svg)',
+          backgroundSize: '150%',
+          backgroundPosition: 'left center',
+          backgroundRepeat: 'no-repeat',
         }}
-      >
-        <img
-          src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&q=80"
-          alt="Cargo aircraft"
-          className="w-full h-full object-cover rounded-md"
-          style={{ filter: 'saturate(0.5) contrast(1.1)' }}
-        />
-      </div>
+      />
 
       {/* Mobile background image */}
-      <div className="absolute inset-0 lg:hidden">
-        <img
-          src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80"
-          alt="Cargo aircraft"
-          className="w-full h-full object-cover opacity-20"
-          style={{ filter: 'saturate(0.5) contrast(1.1)' }}
+      <div className="absolute inset-0 lg:hidden overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: 'url(/hero-prolife.svg)',
+            backgroundSize: '150%',
+            backgroundPosition: 'left center',
+            backgroundRepeat: 'no-repeat',
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-[#0B0C10]/80 to-transparent" />
       </div>
