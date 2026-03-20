@@ -63,12 +63,12 @@ const HowItWorksSection = () => {
         if (!card) return;
         gsap.fromTo(
           card,
-          { x: '-10vw', opacity: 0 },
+          { y: 20, opacity: 0 },
           {
-            x: 0,
+            y: 0,
             opacity: 1,
-            duration: 0.6,
-            delay: index * 0.12,
+            duration: 0.5,
+            delay: index * 0.1,
             scrollTrigger: {
               trigger: card,
               start: 'top 85%',
@@ -100,42 +100,50 @@ const HowItWorksSection = () => {
         </div>
 
         {/* Steps */}
-        <div className="space-y-6">
-          {steps.map((step, index) => {
-            const Icon = step.icon;
-            return (
-              <div
-                key={step.number}
-                ref={(el) => { cardsRef.current[index] = el; }}
-                className="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-10 p-6 lg:p-8 bg-[#0B0C10] rounded-lg border border-white/5"
-              >
-                {/* Number */}
-                <div className="step-number shrink-0">{step.number}</div>
+        <div className="relative">
+          {/* Desktop connector line */}
+          <div
+            className="hidden lg:block absolute h-px bg-gradient-to-r from-transparent via-[#4A90A4]/30 to-transparent"
+            style={{ top: '20px', left: '12.5%', right: '12.5%' }}
+          />
 
-                {/* Content */}
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Icon className="w-5 h-5 text-[#4A90A4]" />
-                    <h3 className="font-display text-xl lg:text-2xl font-semibold text-[#F4F6F8]">
-                      {step.title}
-                    </h3>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 lg:gap-5">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <div
+                  key={step.number}
+                  ref={(el) => { cardsRef.current[index] = el; }}
+                  className="relative flex flex-row lg:flex-col gap-4 lg:gap-0 lg:items-start"
+                >
+                  {/* Mobile: vertical connector line */}
+                  {index < steps.length - 1 && (
+                    <div className="lg:hidden absolute left-5 top-10 bottom-0 w-px bg-gradient-to-b from-[#4A90A4]/25 to-transparent" />
+                  )}
+
+                  {/* Step badge — lg:self-center centers it in the column so the connector line at left:12.5% aligns with badge centers */}
+                  <div className="relative z-10 flex items-center justify-center w-10 h-10 rounded-full bg-[#14161B] border border-[#4A90A4]/40 shrink-0 lg:mb-5 lg:self-center">
+                    <span className="font-display text-sm font-bold text-[#4A90A4]">{step.number}</span>
                   </div>
-                  <p className="text-[#A9B1BA] text-base lg:text-lg">
-                    {step.description}
-                  </p>
+
+                  {/* Content */}
+                  <div className="flex-1 pb-10 lg:pb-0">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-7 h-7 rounded-md bg-[#4A90A4]/10 flex items-center justify-center shrink-0">
+                        <Icon className="w-3.5 h-3.5 text-[#4A90A4]" />
+                      </div>
+                      <h3 className="font-display text-base lg:text-lg font-semibold text-[#F4F6F8]">
+                        {step.title}
+                      </h3>
+                    </div>
+                    <p className="text-[#A9B1BA] text-sm lg:text-base leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
                 </div>
-
-                {/* Arrow (except last) */}
-                {index < steps.length - 1 && (
-                  <div className="hidden lg:block text-[#4A90A4]/30">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M5 12h14M12 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

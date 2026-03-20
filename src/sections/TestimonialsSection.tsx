@@ -1,8 +1,8 @@
-import { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { useInView, useMotionValue, useSpring, useMotionValueEvent } from 'motion/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Quote, Star } from 'lucide-react';
+import { Quote, Star, Package, CheckCircle2, Clock, Calendar } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,7 +27,15 @@ const testimonials = [
   },
 ];
 
-const AnimatedCounter = ({ value, label }: { value: string; label: string }) => {
+const AnimatedCounter = ({
+  value,
+  label,
+  icon: Icon,
+}: {
+  value: string;
+  label: string;
+  icon: React.ElementType;
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });
   const numMatch = value.match(/^(\d+)(.*)/);
@@ -46,11 +54,17 @@ const AnimatedCounter = ({ value, label }: { value: string; label: string }) => 
   }, [isInView, motionVal, numericPart]);
 
   return (
-    <div ref={ref} className="text-center p-5 bg-[#0B0C10] rounded-lg">
-      <p className="font-display text-2xl lg:text-3xl font-bold text-[#4A90A4] mb-1">
+    <div
+      ref={ref}
+      className="group p-5 bg-[#0B0C10] rounded-lg border border-white/[0.06] hover:border-[#4A90A4]/30 transition-colors duration-300"
+    >
+      <div className="w-8 h-8 rounded-md bg-[#4A90A4]/10 flex items-center justify-center mb-3">
+        <Icon className="w-4 h-4 text-[#4A90A4]" />
+      </div>
+      <p className="font-display text-3xl lg:text-4xl font-bold text-[#F4F6F8] mb-1 tabular-nums">
         {display}{suffix}
       </p>
-      <p className="text-sm text-[#A9B1BA]">{label}</p>
+      <p className="mono-label text-[#A9B1BA]">{label}</p>
     </div>
   );
 };
@@ -125,12 +139,12 @@ const TestimonialsSection = () => {
         {/* Stats — выше testimonials для быстрого trust building */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
           {[
-            { value: '2015', label: 'Год основания' },
-            { value: '5000+', label: 'Доставленных грузов' },
-            { value: '98%', label: 'Довольных клиентов' },
-            { value: '12 дн', label: 'Средний срок доставки' },
+            { value: '2015', label: 'Год основания', icon: Calendar },
+            { value: '5000+', label: 'Доставленных грузов', icon: Package },
+            { value: '98%', label: 'Довольных клиентов', icon: CheckCircle2 },
+            { value: '12 дн', label: 'Средний срок доставки', icon: Clock },
           ].map((stat) => (
-            <AnimatedCounter key={stat.label} value={stat.value} label={stat.label} />
+            <AnimatedCounter key={stat.label} value={stat.value} label={stat.label} icon={stat.icon} />
           ))}
         </div>
 
