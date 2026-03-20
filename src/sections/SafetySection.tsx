@@ -1,4 +1,5 @@
 import { useRef, useLayoutEffect } from 'react';
+import { motion } from 'motion/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight, Shield, Package, Thermometer, Anchor } from 'lucide-react';
@@ -155,15 +156,18 @@ const SafetySection = () => {
             </div>
           </div>
 
-          <a
+          <motion.a
             href="https://api.whatsapp.com/send?phone=996990111125&text="
             target="_blank"
             rel="noopener noreferrer"
             className="btn-outline text-sm inline-flex"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ duration: 0.12 }}
           >
             Уточнить условия
             <ArrowRight className="w-4 h-4 ml-2" />
-          </a>
+          </motion.a>
         </div>
       </div>
     </section>
