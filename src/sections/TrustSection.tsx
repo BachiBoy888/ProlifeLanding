@@ -36,11 +36,11 @@ const TrustSection = () => {
     mm.add('(max-width: 1023px)', () => {
       const ctx = gsap.context(() => {
         const scrollTl = gsap.timeline({
-          scrollTrigger: { trigger: section, start: 'top top', end: '+=130%', pin: true, scrub: 0.4 },
+          scrollTrigger: { trigger: section, start: 'top top', end: '+=80%', pin: true, scrub: 0.3 },
         });
-        // Mobile: no entrance — content starts visible; exit only in the last 20% of pin range
-        scrollTl.fromTo(headlineRef.current, { opacity: 1 }, { opacity: 0, ease: 'power2.in' }, 0.8);
-        scrollTl.fromTo(contentRef.current, { opacity: 1 }, { opacity: 0, ease: 'power2.in' }, 0.8);
+        // Mobile: no entrance — content starts visible; short exit in the last ~27% of pin range
+        scrollTl.fromTo(headlineRef.current, { opacity: 1 }, { opacity: 0, ease: 'power2.in', duration: 0.3 }, 0.8);
+        scrollTl.fromTo(contentRef.current, { opacity: 1 }, { opacity: 0, ease: 'power2.in', duration: 0.3 }, 0.8);
       }, section);
       return () => ctx.revert();
     });
@@ -96,9 +96,8 @@ const TrustSection = () => {
           ref={headlineRef}
           className="mb-6 lg:mb-8 lg:max-w-[46vw]"
         >
-          <div className="section-headline text-[#F4F6F8] leading-[0.9]">
-            <div>ГАРАН</div>
-            <div>ТИРУЕМ</div>
+          <div className="section-headline lg:text-[5.5vw] text-[#F4F6F8] leading-[0.9]">
+            <div>ГАРАНТИРУЕМ</div>
             <div className="text-[#4A90A4]">КАЧЕСТВО</div>
           </div>
         </div>
