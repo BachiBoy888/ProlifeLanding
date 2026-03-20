@@ -198,7 +198,7 @@ const ServicesSection = () => {
                 </p>
                 
                 <a
-                  href="https://api.whatsapp.com/send?phone=996990111125&text="
+                  href={`https://api.whatsapp.com/send?phone=996990111125&text=${encodeURIComponent(`Здравствуйте, интересует услуга «${service.title}»`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center text-sm text-[#4A90A4] hover:text-[#F4F6F8] transition-colors"

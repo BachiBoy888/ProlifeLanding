@@ -1,6 +1,7 @@
 import { useEffect, useRef, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Shield, Package, Clock } from 'lucide-react';
 import Calculator from '../components/Calculator';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -209,8 +210,21 @@ const HeroSection = () => {
           <Calculator />
         </div>
 
-        {/* Spacer ref for GSAP exit animation */}
-        <div ref={ctaRef} />
+        {/* Trust badges — анимируются вместе с exit через ctaRef */}
+        <div ref={ctaRef} className="flex flex-wrap gap-4 mt-2">
+          <span className="flex items-center gap-1.5 text-xs text-[#A9B1BA]">
+            <Package className="w-3.5 h-3.5 text-[#4A90A4] shrink-0" />
+            5 000+ доставок
+          </span>
+          <span className="flex items-center gap-1.5 text-xs text-[#A9B1BA]">
+            <Shield className="w-3.5 h-3.5 text-[#4A90A4] shrink-0" />
+            98% без потерь
+          </span>
+          <span className="flex items-center gap-1.5 text-xs text-[#A9B1BA]">
+            <Clock className="w-3.5 h-3.5 text-[#4A90A4] shrink-0" />
+            С 2015 года
+          </span>
+        </div>
       </div>
     </section>
   );

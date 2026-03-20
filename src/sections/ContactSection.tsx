@@ -88,7 +88,7 @@ const ContactSection = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <motion.a
-                href="https://api.whatsapp.com/send?phone=996990111125&text="
+                href={`https://api.whatsapp.com/send?phone=996990111125&text=${encodeURIComponent('Здравствуйте, хочу получить консультацию по доставке')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary"

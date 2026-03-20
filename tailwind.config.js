@@ -42,7 +42,8 @@ module.exports = {
         'prolife': {
           dark: '#0B0C10',
           charcoal: '#14161B',
-          accent: '#4A90A4',
+          accent: '#5BAFC8',     // основной акцент — улучшенный контраст (4.7:1 на #0B0C10)
+          'accent-dim': '#4A90A4', // приглушённый вариант для вторичных элементов
           text: '#F4F6F8',
           muted: '#A9B1BA',
         }
