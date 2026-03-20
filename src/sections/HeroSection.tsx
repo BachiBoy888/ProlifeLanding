@@ -71,68 +71,47 @@ const HeroSection = () => {
     const section = sectionRef.current;
     if (!section) return;
 
-    const ctx = gsap.context(() => {
-      const scrollTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: 'top top',
-          end: '+=130%',
-          pin: true,
-          scrub: 0.6,
-          onLeaveBack: () => {
-            // Reset all elements to visible when scrolling back to top
-            gsap.set([headlineRef.current, imageRef.current, calculatorRef.current, subheadlineRef.current, ctaRef.current], {
-              opacity: 1,
-              x: 0,
-              y: 0,
-              scale: 1,
-            });
+    const mm = gsap.matchMedia();
+
+    mm.add('(min-width: 1024px)', () => {
+      const ctx = gsap.context(() => {
+        const scrollTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: 'top top',
+            end: '+=130%',
+            pin: true,
+            scrub: 0.6,
+            onLeaveBack: () => {
+              gsap.set([headlineRef.current, imageRef.current, calculatorRef.current, subheadlineRef.current, ctaRef.current], {
+                opacity: 1, x: 0, y: 0, scale: 1,
+              });
+            },
           },
-        },
-      });
+        });
+        scrollTl.fromTo(imageRef.current, { y: -10 }, { y: 0, ease: 'none' }, 0);
+        scrollTl.fromTo(headlineRef.current, { x: 0, opacity: 1 }, { x: '-40vw', opacity: 0, ease: 'power2.in' }, 0.7);
+        scrollTl.fromTo(imageRef.current, { x: 0, scale: 1, opacity: 1 }, { x: '18vw', scale: 1.08, opacity: 0, ease: 'power2.in' }, 0.7);
+        scrollTl.fromTo(calculatorRef.current, { y: 0, opacity: 1 }, { y: '18vh', opacity: 0, ease: 'power2.in' }, 0.7);
+        scrollTl.fromTo([subheadlineRef.current, ctaRef.current], { y: 0, opacity: 1 }, { y: '12vh', opacity: 0, ease: 'power2.in' }, 0.75);
+      }, section);
+      return () => ctx.revert();
+    });
 
-      // ENTRANCE (0-30%): Hold - elements already visible from load animation
-      // Just subtle parallax on image
-      scrollTl.fromTo(
-        imageRef.current,
-        { y: -10 },
-        { y: 0, ease: 'none' },
-        0
-      );
+    mm.add('(max-width: 1023px)', () => {
+      const ctx = gsap.context(() => {
+        const scrollTl = gsap.timeline({
+          scrollTrigger: { trigger: section, start: 'top top', end: '+=80%', pin: true, scrub: 0.3 },
+        });
+        // Mobile: opacity-only exit, no x/y translations that cause jitter
+        scrollTl.fromTo(headlineRef.current, { opacity: 1 }, { opacity: 0, ease: 'power2.in', duration: 0.3 }, 0.8);
+        scrollTl.fromTo(calculatorRef.current, { opacity: 1 }, { opacity: 0, ease: 'power2.in', duration: 0.3 }, 0.8);
+        scrollTl.fromTo([subheadlineRef.current, ctaRef.current], { opacity: 1 }, { opacity: 0, ease: 'power2.in', duration: 0.3 }, 0.8);
+      }, section);
+      return () => ctx.revert();
+    });
 
-      // SETTLE (30-70%): Static
-
-      // EXIT (70-100%): Elements exit
-      scrollTl.fromTo(
-        headlineRef.current,
-        { x: 0, opacity: 1 },
-        { x: '-40vw', opacity: 0, ease: 'power2.in' },
-        0.7
-      );
-
-      scrollTl.fromTo(
-        imageRef.current,
-        { x: 0, scale: 1, opacity: 1 },
-        { x: '18vw', scale: 1.08, opacity: 0, ease: 'power2.in' },
-        0.7
-      );
-
-      scrollTl.fromTo(
-        calculatorRef.current,
-        { y: 0, opacity: 1 },
-        { y: '18vh', opacity: 0, ease: 'power2.in' },
-        0.7
-      );
-
-      scrollTl.fromTo(
-        [subheadlineRef.current, ctaRef.current],
-        { y: 0, opacity: 1 },
-        { y: '12vh', opacity: 0, ease: 'power2.in' },
-        0.75
-      );
-    }, section);
-
-    return () => ctx.revert();
+    return () => mm.revert();
   }, []);
 
   return (
@@ -179,7 +158,7 @@ const HeroSection = () => {
         {/* Headline */}
         <div
           ref={headlineRef}
-          className="mb-6 lg:mb-8 lg:max-w-[44vw]"
+          className="mb-6 lg:mb-8 lg:max-w-[50vw]"
         >
           <div className="hero-headline text-[#F4F6F8] leading-[0.88]" style={{ fontSize: 'clamp(40px, 7vw, 108px)' }}>
             <div className="headline-line">ДОСТАВКА</div>
