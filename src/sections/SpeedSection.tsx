@@ -1,4 +1,5 @@
 import { useRef, useLayoutEffect } from 'react';
+import { motion } from 'motion/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight, Clock, Shield } from 'lucide-react';
@@ -147,13 +148,16 @@ const SpeedSection = () => {
             </div>
           </div>
 
-          <a
+          <motion.a
             href="#routes"
             className="btn-outline text-sm inline-flex"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ duration: 0.12 }}
           >
             Узнать маршруты
             <ArrowRight className="w-4 h-4 ml-2" />
-          </a>
+          </motion.a>
         </div>
       </div>
     </section>

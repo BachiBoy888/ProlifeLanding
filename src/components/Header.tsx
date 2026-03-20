@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X, MessageCircle } from 'lucide-react';
 
 const Header = () => {
@@ -56,67 +57,85 @@ const Header = () => {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8">
               {navItems.map((item) => (
-                <button
+                <motion.button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
                   className="text-sm text-[#A9B1BA] hover:text-[#F4F6F8] transition-colors"
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.1 }}
                 >
                   {item.label}
-                </button>
+                </motion.button>
               ))}
             </nav>
 
             {/* CTA Button */}
             <div className="hidden lg:flex items-center gap-4">
-              <a
+              <motion.a
                 href="https://api.whatsapp.com/send?phone=996990111125&text="
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-outline text-sm py-2.5 px-4"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: 0.12 }}
               >
                 <MessageCircle className="w-4 h-4 mr-2" />
                 WhatsApp
-              </a>
+              </motion.a>
             </div>
 
             {/* Mobile Menu Button */}
-            <button
+            <motion.button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="lg:hidden p-2 text-[#F4F6F8]"
+              whileTap={{ scale: 0.9 }}
+              transition={{ duration: 0.1 }}
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            </motion.button>
           </div>
         </div>
       </header>
 
       {/* Mobile Menu */}
-      <div
-        className={`fixed inset-0 z-[99] bg-[#0B0C10]/98 backdrop-blur-lg transition-all duration-300 lg:hidden ${
-          isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-        }`}
-      >
-        <div className="flex flex-col items-center justify-center h-full gap-8">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => scrollToSection(item.id)}
-              className="text-2xl font-display text-[#F4F6F8] hover:text-[#4A90A4] transition-colors"
-            >
-              {item.label}
-            </button>
-          ))}
-          <a
-            href="https://api.whatsapp.com/send?phone=996990111125&text="
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary mt-4"
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            className="fixed inset-0 z-[99] bg-[#0B0C10]/98 backdrop-blur-lg lg:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
           >
-            <MessageCircle className="w-5 h-5 mr-2" />
-            Написать в WhatsApp
-          </a>
-        </div>
-      </div>
+            <div className="flex flex-col items-center justify-center h-full gap-8">
+              {navItems.map((item) => (
+                <motion.button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className="text-2xl font-display text-[#F4F6F8] hover:text-[#4A90A4] transition-colors"
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.1 }}
+                >
+                  {item.label}
+                </motion.button>
+              ))}
+              <motion.a
+                href="https://api.whatsapp.com/send?phone=996990111125&text="
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary mt-4"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: 0.12 }}
+              >
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Написать в WhatsApp
+              </motion.a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

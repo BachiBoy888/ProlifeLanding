@@ -1,4 +1,5 @@
-import { useRef, useLayoutEffect } from 'react';
+import { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import { useInView, useMotionValue, useSpring, useMotionValueEvent } from 'motion/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Quote, Star } from 'lucide-react';
@@ -25,6 +26,34 @@ const testimonials = [
     rating: 5,
   },
 ];
+
+const AnimatedCounter = ({ value, label }: { value: string; label: string }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: '-50px' });
+  const numMatch = value.match(/^(\d+)(.*)/);
+  const numericPart = numMatch ? parseInt(numMatch[1]) : 0;
+  const suffix = numMatch ? numMatch[2] : '';
+  const motionVal = useMotionValue(0);
+  const spring = useSpring(motionVal, { stiffness: 55, damping: 18 });
+  const [display, setDisplay] = useState('0');
+
+  useMotionValueEvent(spring, 'change', (v) => {
+    setDisplay(String(Math.round(v)));
+  });
+
+  useEffect(() => {
+    if (isInView && numericPart > 0) motionVal.set(numericPart);
+  }, [isInView, motionVal, numericPart]);
+
+  return (
+    <div ref={ref} className="text-center p-5 bg-[#0B0C10] rounded-lg">
+      <p className="font-display text-2xl lg:text-3xl font-bold text-[#4A90A4] mb-1">
+        {display}{suffix}
+      </p>
+      <p className="text-sm text-[#A9B1BA]">{label}</p>
+    </div>
+  );
+};
 
 const TestimonialsSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -139,12 +168,7 @@ const TestimonialsSection = () => {
             { value: '98%', label: 'Довольных клиентов' },
             { value: '12 дн', label: 'Средний срок доставки' },
           ].map((stat) => (
-            <div key={stat.label} className="text-center p-5 bg-[#0B0C10] rounded-lg">
-              <p className="font-display text-2xl lg:text-3xl font-bold text-[#4A90A4] mb-1">
-                {stat.value}
-              </p>
-              <p className="text-sm text-[#A9B1BA]">{stat.label}</p>
-            </div>
+            <AnimatedCounter key={stat.label} value={stat.value} label={stat.label} />
           ))}
         </div>
       </div>

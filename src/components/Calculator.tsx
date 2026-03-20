@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import {
   Calculator as CalcIcon,
@@ -229,16 +230,26 @@ const Calculator = () => {
   const stepOrder: Step[] = ['form', 'result', 'contact', 'success'];
   const currentStepIdx = stepOrder.indexOf(step);
 
-  const modal = isOpen ? (
-    <div
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
-      style={{ background: 'rgba(11, 12, 16, 0.92)', backdropFilter: 'blur(12px)' }}
-      onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
-    >
-      <div
-        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border border-white/[0.2] bg-[#1A1D27]"
-        style={{ boxShadow: '0 0 0 1px rgba(74,144,164,0.15), 0 24px 80px rgba(0,0,0,0.85), 0 8px 32px rgba(0,0,0,0.6)' }}
-      >
+  const modal = (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          style={{ background: 'rgba(11, 12, 16, 0.92)', backdropFilter: 'blur(12px)' }}
+          onClick={(e: React.MouseEvent<HTMLDivElement>) => { if (e.target === e.currentTarget) closeModal(); }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <motion.div
+            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border border-white/[0.2] bg-[#1A1D27]"
+            style={{ boxShadow: '0 0 0 1px rgba(74,144,164,0.15), 0 24px 80px rgba(0,0,0,0.85), 0 8px 32px rgba(0,0,0,0.6)' }}
+            initial={{ opacity: 0, scale: 0.95, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 8 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+          >
         {/* Шапка модального окна */}
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-3.5 border-b border-white/[0.1] bg-[#1A1D27]">
           <div className="flex items-center gap-3">
@@ -277,9 +288,11 @@ const Calculator = () => {
 
         {/* Тело модального окна */}
         <div className="p-5">
+          <AnimatePresence mode="wait">
 
           {/* ── ШАГ 1: ФОРМА ── */}
           {step === 'form' && (
+            <motion.div key="form" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.18, ease: 'easeOut' }}>
             <div className="space-y-3.5">
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -324,7 +337,7 @@ const Calculator = () => {
                 <label className="mono-label text-[#C8D0D8] block mb-3">Пакет доставки</label>
                 <div className="flex flex-col gap-1.5">
                   {PACKAGES.map((pkg) => (
-                    <button
+                    <motion.button
                       key={pkg.id}
                       onClick={() => setForm({ ...form, packageId: pkg.id })}
                       className={`relative text-left rounded-lg border p-3.5 transition-all duration-200 ${
@@ -332,6 +345,8 @@ const Calculator = () => {
                           ? 'border-[#4A90A4] bg-[#4A90A4]/[0.12] shadow-[0_0_0_1px_rgba(74,144,164,0.25)]'
                           : 'border-white/10 bg-[#141720] hover:border-white/25 hover:bg-[#1E2130]'
                       }`}
+                      whileTap={{ scale: 0.98 }}
+                      transition={{ duration: 0.1 }}
                     >
                       {'popular' in pkg && (
                         <span className="absolute top-2.5 right-3 text-[10px] font-mono bg-[#4A90A4]/20 text-[#4A90A4] px-2 py-0.5 rounded-full">
@@ -353,7 +368,7 @@ const Calculator = () => {
                           </span>
                         ))}
                       </div>
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
@@ -370,10 +385,12 @@ const Calculator = () => {
                 * Расчёт по плотности: плотность = вес ÷ объём (кг/м³)
               </p>
             </div>
+            </motion.div>
           )}
 
           {/* ── ШАГ 2: РЕЗУЛЬТАТ ── */}
           {step === 'result' && result && (
+            <motion.div key="result" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.18, ease: 'easeOut' }}>
             <div className="space-y-3.5">
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-[#13151E] rounded-lg p-3 text-center col-span-1">
@@ -450,10 +467,12 @@ const Calculator = () => {
                 * Предварительный расчёт. Точная цена — после подтверждения менеджером.
               </p>
             </div>
+            </motion.div>
           )}
 
           {/* ── ШАГ 3: КОНТАКТЫ ── */}
           {step === 'contact' && (
+            <motion.div key="contact" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.18, ease: 'easeOut' }}>
             <div className="space-y-3.5">
               <p className="text-sm text-[#C8D0D8] leading-relaxed">
                 Оставьте контакты — менеджер свяжется в течение часа и подтвердит точную стоимость.
@@ -555,14 +574,21 @@ const Calculator = () => {
               </button>
               <p className="text-xs text-[#A9B1BA] text-center">* Обязательно только телефон</p>
             </div>
+            </motion.div>
           )}
 
           {/* ── ШАГ 4: УСПЕХ ── */}
           {step === 'success' && (
+            <motion.div key="success" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.18, ease: 'easeOut' }}>
             <div className="py-10 flex flex-col items-center text-center gap-5">
-              <div className="w-16 h-16 rounded-full bg-[#4A90A4]/20 flex items-center justify-center">
+              <motion.div
+                className="w-16 h-16 rounded-full bg-[#4A90A4]/20 flex items-center justify-center"
+                initial={{ scale: 0, rotate: -15 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 16, delay: 0.05 }}
+              >
                 <Check className="w-8 h-8 text-[#4A90A4]" />
-              </div>
+              </motion.div>
               <div>
                 <h4 className="font-display font-semibold text-[#F4F6F8] text-lg mb-2">Заявка отправлена!</h4>
                 <p className="text-sm text-[#A9B1BA] leading-relaxed">
@@ -570,16 +596,26 @@ const Calculator = () => {
                   и подтвердит точную стоимость доставки.
                 </p>
               </div>
-              <button onClick={closeModal} className="btn-outline text-sm">
+              <motion.button
+                onClick={closeModal}
+                className="btn-outline text-sm"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: 0.12 }}
+              >
                 Закрыть
-              </button>
+              </motion.button>
             </div>
+            </motion.div>
           )}
 
+          </AnimatePresence>
         </div>
-      </div>
-    </div>
-  ) : null;
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <>
@@ -613,10 +649,16 @@ const Calculator = () => {
           ))}
         </div>
 
-        <button onClick={openModal} className="btn-primary w-full text-sm">
+        <motion.button
+          onClick={openModal}
+          className="btn-primary w-full text-sm"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          transition={{ duration: 0.12 }}
+        >
           Рассчитать
           <ArrowRight className="w-4 h-4 ml-2" />
-        </button>
+        </motion.button>
       </div>
 
       {/* Модальное окно рендерится в document.body через portal */}
