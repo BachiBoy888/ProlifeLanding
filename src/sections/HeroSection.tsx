@@ -179,7 +179,7 @@ const HeroSection = () => {
         {/* Headline */}
         <div
           ref={headlineRef}
-          className="mb-6 lg:mb-8 lg:max-w-[44vw]"
+          className="mb-6 lg:mb-8 lg:max-w-[50vw]"
         >
           <div className="hero-headline text-[#F4F6F8] leading-[0.88]" style={{ fontSize: 'clamp(40px, 7vw, 108px)' }}>
             <div className="headline-line">ДОСТАВКА</div>

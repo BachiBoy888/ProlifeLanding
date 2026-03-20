@@ -16,65 +16,38 @@ const SpeedSection = () => {
     const section = sectionRef.current;
     if (!section) return;
 
-    const ctx = gsap.context(() => {
-      const scrollTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: 'top top',
-          end: '+=130%',
-          pin: true,
-          scrub: 0.6,
-        },
-      });
+    const mm = gsap.matchMedia();
 
-      // ENTRANCE (0-30%)
-      scrollTl.fromTo(
-        headlineRef.current,
-        { x: '-55vw', opacity: 0, rotateZ: -2 },
-        { x: 0, opacity: 1, rotateZ: 0, ease: 'none' },
-        0
-      );
+    mm.add('(min-width: 1024px)', () => {
+      const ctx = gsap.context(() => {
+        const scrollTl = gsap.timeline({
+          scrollTrigger: { trigger: section, start: 'top top', end: '+=130%', pin: true, scrub: 0.6 },
+        });
+        scrollTl.fromTo(headlineRef.current, { x: '-55vw', opacity: 0, rotateZ: -2 }, { x: 0, opacity: 1, rotateZ: 0, ease: 'none' }, 0);
+        scrollTl.fromTo(imageRef.current, { x: '60vw', opacity: 0, scale: 1.08 }, { x: 0, opacity: 1, scale: 1, ease: 'none' }, 0);
+        scrollTl.fromTo(contentRef.current, { y: '18vh', opacity: 0 }, { y: 0, opacity: 1, ease: 'none' }, 0.1);
+        scrollTl.fromTo(headlineRef.current, { y: 0, opacity: 1 }, { y: '-22vh', opacity: 0, ease: 'power2.in' }, 0.7);
+        scrollTl.fromTo(imageRef.current, { y: 0, opacity: 1 }, { y: '22vh', opacity: 0, ease: 'power2.in' }, 0.7);
+        scrollTl.fromTo(contentRef.current, { x: 0, opacity: 1 }, { x: '-18vw', opacity: 0, ease: 'power2.in' }, 0.75);
+      }, section);
+      return () => ctx.revert();
+    });
 
-      scrollTl.fromTo(
-        imageRef.current,
-        { x: '60vw', opacity: 0, scale: 1.08 },
-        { x: 0, opacity: 1, scale: 1, ease: 'none' },
-        0
-      );
+    mm.add('(max-width: 1023px)', () => {
+      const ctx = gsap.context(() => {
+        const scrollTl = gsap.timeline({
+          scrollTrigger: { trigger: section, start: 'top top', end: '+=130%', pin: true, scrub: 0.6 },
+        });
+        // Mobile: y+opacity only — no horizontal translations
+        scrollTl.fromTo(headlineRef.current, { y: '8vh', opacity: 0 }, { y: 0, opacity: 1, ease: 'none' }, 0);
+        scrollTl.fromTo(contentRef.current, { y: '6vh', opacity: 0 }, { y: 0, opacity: 1, ease: 'none' }, 0.1);
+        scrollTl.fromTo(headlineRef.current, { opacity: 1 }, { opacity: 0, ease: 'power2.in' }, 0.75);
+        scrollTl.fromTo(contentRef.current, { opacity: 1 }, { opacity: 0, ease: 'power2.in' }, 0.75);
+      }, section);
+      return () => ctx.revert();
+    });
 
-      scrollTl.fromTo(
-        contentRef.current,
-        { y: '18vh', opacity: 0 },
-        { y: 0, opacity: 1, ease: 'none' },
-        0.1
-      );
-
-      // SETTLE (30-70%): Hold
-
-      // EXIT (70-100%)
-      scrollTl.fromTo(
-        headlineRef.current,
-        { y: 0, opacity: 1 },
-        { y: '-22vh', opacity: 0, ease: 'power2.in' },
-        0.7
-      );
-
-      scrollTl.fromTo(
-        imageRef.current,
-        { y: 0, opacity: 1 },
-        { y: '22vh', opacity: 0, ease: 'power2.in' },
-        0.7
-      );
-
-      scrollTl.fromTo(
-        contentRef.current,
-        { x: 0, opacity: 1 },
-        { x: '-18vw', opacity: 0, ease: 'power2.in' },
-        0.75
-      );
-    }, section);
-
-    return () => ctx.revert();
+    return () => mm.revert();
   }, []);
 
   return (
@@ -123,8 +96,7 @@ const SpeedSection = () => {
         {/* Headline */}
         <div
           ref={headlineRef}
-          className="mb-6 lg:mb-8"
-          style={{ maxWidth: '46vw' }}
+          className="mb-6 lg:mb-8 lg:max-w-[46vw]"
         >
           <div className="section-headline text-[#F4F6F8] leading-[0.9]">
             <div>ОТ</div>
@@ -134,7 +106,7 @@ const SpeedSection = () => {
         </div>
 
         {/* Content block */}
-        <div ref={contentRef} style={{ maxWidth: '36vw' }}>
+        <div ref={contentRef} className="lg:max-w-[36vw]">
           <p className="mono-label text-[#A9B1BA] mb-4">
             АВИА · АВТО · МУЛЬТИМОДАЛЬНЫЕ РЕЙСЫ ПОД КЛЮЧ
           </p>
