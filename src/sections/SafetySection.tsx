@@ -97,6 +97,9 @@ const SafetySection = () => {
           src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=1200&q=80"
           alt="Truck fleet"
           className="w-full h-full object-cover rounded-md"
+          loading="lazy"
+          width={1200}
+          height={900}
           style={{ filter: 'saturate(0.5) contrast(1.1)' }}
         />
       </div>
@@ -105,8 +108,11 @@ const SafetySection = () => {
       <div className="absolute inset-0 lg:hidden">
         <img
           src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&q=80"
-          alt="Truck fleet"
+          alt=""
           className="w-full h-full object-cover opacity-15"
+          loading="lazy"
+          width={800}
+          height={600}
           style={{ filter: 'saturate(0.5) contrast(1.1)' }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-[#0B0C10]/85 to-transparent" />
@@ -157,7 +163,7 @@ const SafetySection = () => {
           </div>
 
           <motion.a
-            href="https://api.whatsapp.com/send?phone=996990111125&text="
+            href={`https://api.whatsapp.com/send?phone=996990111125&text=${encodeURIComponent('Здравствуйте, хочу уточнить условия страхования груза')}`}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-outline text-sm inline-flex"

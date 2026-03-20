@@ -100,6 +100,9 @@ const CoverageSection = () => {
           src="https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=1200&q=80"
           alt="Port aerial view"
           className="w-full h-full object-cover rounded-md"
+          loading="lazy"
+          width={1200}
+          height={900}
           style={{ filter: 'saturate(0.5) contrast(1.1)' }}
         />
       </div>
@@ -108,8 +111,11 @@ const CoverageSection = () => {
       <div className="absolute inset-0 lg:hidden">
         <img
           src="https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=800&q=80"
-          alt="Port aerial view"
+          alt=""
           className="w-full h-full object-cover opacity-15"
+          loading="lazy"
+          width={800}
+          height={600}
           style={{ filter: 'saturate(0.5) contrast(1.1)' }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-[#0B0C10]/85 to-transparent" />
@@ -137,7 +143,7 @@ const CoverageSection = () => {
             {cities.map((city) => (
               <span
                 key={city}
-                className="mono-label text-[#4A90A4] px-3 py-1.5 bg-[#4A90A4]/10 rounded"
+                className="mono-label text-[#4A90A4] px-3 py-1.5 bg-[#4A90A4]/10 rounded cursor-default"
               >
                 {city}
               </span>
@@ -164,7 +170,7 @@ const CoverageSection = () => {
           </div>
 
           <motion.a
-            href="https://api.whatsapp.com/send?phone=996990111125&text="
+            href={`https://api.whatsapp.com/send?phone=996990111125&text=${encodeURIComponent('Здравствуйте, хочу запросить сборку груза из Китая')}`}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-outline text-sm inline-flex"

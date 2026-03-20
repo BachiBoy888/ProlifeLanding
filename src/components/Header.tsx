@@ -72,7 +72,7 @@ const Header = () => {
             {/* CTA Button */}
             <div className="hidden lg:flex items-center gap-4">
               <motion.a
-                href="https://api.whatsapp.com/send?phone=996990111125&text="
+                href={`https://api.whatsapp.com/send?phone=996990111125&text=${encodeURIComponent('Здравствуйте, интересует доставка из Китая')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-outline text-sm py-2.5 px-4"
@@ -121,7 +121,7 @@ const Header = () => {
                 </motion.button>
               ))}
               <motion.a
-                href="https://api.whatsapp.com/send?phone=996990111125&text="
+                href={`https://api.whatsapp.com/send?phone=996990111125&text=${encodeURIComponent('Здравствуйте, интересует доставка из Китая')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary mt-4"

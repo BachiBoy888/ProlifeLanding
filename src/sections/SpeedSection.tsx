@@ -97,6 +97,9 @@ const SpeedSection = () => {
           src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&q=80"
           alt="Container loading"
           className="w-full h-full object-cover rounded-md"
+          loading="lazy"
+          width={1200}
+          height={900}
           style={{ filter: 'saturate(0.5) contrast(1.1)' }}
         />
       </div>
@@ -105,8 +108,11 @@ const SpeedSection = () => {
       <div className="absolute inset-0 lg:hidden">
         <img
           src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80"
-          alt="Container loading"
+          alt=""
           className="w-full h-full object-cover opacity-15"
+          loading="lazy"
+          width={800}
+          height={600}
           style={{ filter: 'saturate(0.5) contrast(1.1)' }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-[#0B0C10]/85 to-transparent" />

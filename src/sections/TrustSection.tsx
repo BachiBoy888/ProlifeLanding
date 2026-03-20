@@ -97,6 +97,9 @@ const TrustSection = () => {
           src="https://images.unsplash.com/photo-1553413077-190dd305871c?w=1200&q=80"
           alt="Warehouse check"
           className="w-full h-full object-cover rounded-md"
+          loading="lazy"
+          width={1200}
+          height={900}
           style={{ filter: 'saturate(0.5) contrast(1.1)' }}
         />
       </div>
@@ -105,8 +108,11 @@ const TrustSection = () => {
       <div className="absolute inset-0 lg:hidden">
         <img
           src="https://images.unsplash.com/photo-1553413077-190dd305871c?w=800&q=80"
-          alt="Warehouse check"
+          alt=""
           className="w-full h-full object-cover opacity-15"
+          loading="lazy"
+          width={800}
+          height={600}
           style={{ filter: 'saturate(0.5) contrast(1.1)' }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-[#0B0C10]/85 to-transparent" />
@@ -122,8 +128,7 @@ const TrustSection = () => {
         >
           <div className="section-headline text-[#F4F6F8] leading-[0.9]">
             <div>ГАРАН</div>
-            <div>ТИРУ</div>
-            <div>ЕМ</div>
+            <div>ТИРУЕМ</div>
             <div className="text-[#4A90A4]">КАЧЕСТВО</div>
           </div>
         </div>
@@ -158,7 +163,7 @@ const TrustSection = () => {
           </div>
 
           <motion.a
-            href="https://api.whatsapp.com/send?phone=996990111125&text="
+            href={`https://api.whatsapp.com/send?phone=996990111125&text=${encodeURIComponent('Здравствуйте, хочу узнать о гарантиях качества')}`}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-outline text-sm inline-flex"
