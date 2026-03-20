@@ -470,11 +470,13 @@ const Calculator = () => {
                   </div>
                 </div>
 
-                <ConsentCheckbox
-                  checked={consentChecked}
-                  onChange={(v) => { setConsentChecked(v); if (v) setConsentError(''); }}
-                  error={consentError}
-                />
+                <div className="mb-3">
+                  <ConsentCheckbox
+                    checked={consentChecked}
+                    onChange={(v) => { setConsentChecked(v); if (v) setConsentError(''); }}
+                    error={consentError}
+                  />
+                </div>
 
                 {submitError && (
                   <div className="flex items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3">
