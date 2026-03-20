@@ -182,8 +182,27 @@
   .pinned-section {
     position: relative;
     width: 100vw;
+    /* Cascade fallback strategy for mobile viewport height:
+       1. 100vh — baseline fallback for very old browsers
+       2. calc(var(--vh) * 100) — JS-measured window.innerHeight (set in App.tsx),
+          reliable in Instagram/Facebook WebView and old Safari that don't support svh
+       3. 100svh — modern standard: "small viewport height" excludes collapsing
+          browser chrome, stable on Safari 15.4+, Chrome 108+                      */
     height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+    height: 100svh;
     overflow: hidden;
+  }
+
+  /* On mobile the exit animation is opacity-only (no translations),
+     so we don't need overflow: hidden to clip anything.
+     Allowing overflow-y: visible prevents content from being clipped
+     when the viewport is shorter than expected (in-app browsers). */
+  @media (max-width: 1023px) {
+    .pinned-section {
+      overflow-x: hidden;
+      overflow-y: visible;
+    }
   }
 }
 
