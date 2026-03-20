@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
@@ -15,10 +15,24 @@ import HowItWorksSection from './sections/HowItWorksSection';
 import ServicesSection from './sections/ServicesSection';
 import TestimonialsSection from './sections/TestimonialsSection';
 import ContactSection from './sections/ContactSection';
+import CookiesBanner from './components/CookiesBanner';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 function App() {
+  const [page, setPage] = useState(() =>
+    window.location.hash === '#/privacy' ? 'privacy' : 'home'
+  );
+
+  useEffect(() => {
+    const onHashChange = () => {
+      setPage(window.location.hash === '#/privacy' ? 'privacy' : 'home');
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
   // Slide navigation for pinned sections
   useEffect(() => {
     const SLIDE_DURATION = 0.9;   // секунды — длительность анимированного перехода
@@ -144,10 +158,21 @@ function App() {
     };
   }, []);
 
+  if (page === 'privacy') {
+    return (
+      <>
+        <CookiesBanner />
+        <PrivacyPolicy />
+      </>
+    );
+  }
+
   return (
     <div className="relative bg-[#0B0C10] min-h-screen">
       {/* Grain overlay */}
       <div className="grain-overlay" />
+
+      <CookiesBanner />
 
       {/* Header */}
       <Header />
