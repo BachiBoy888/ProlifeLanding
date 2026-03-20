@@ -115,11 +115,23 @@ const TestimonialsSection = () => {
         {/* Heading */}
         <div ref={headingRef} className="mb-12 lg:mb-16">
           <h2 className="font-display text-3xl lg:text-5xl font-bold text-[#F4F6F8] mb-4">
-            Отзывы
+            Нам доверяют
           </h2>
           <p className="text-[#A9B1BA] text-lg">
-            Работаем с предпринимателями, магазинами и маркетплейсами.
+            Более 5 000 доставок с 2015 года. Работаем с предпринимателями, магазинами и маркетплейсами.
           </p>
+        </div>
+
+        {/* Stats — выше testimonials для быстрого trust building */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+          {[
+            { value: '2015', label: 'Год основания' },
+            { value: '5000+', label: 'Доставленных грузов' },
+            { value: '98%', label: 'Довольных клиентов' },
+            { value: '12 дн', label: 'Средний срок доставки' },
+          ].map((stat) => (
+            <AnimatedCounter key={stat.label} value={stat.value} label={stat.label} />
+          ))}
         </div>
 
         {/* Testimonials Grid */}
@@ -157,18 +169,6 @@ const TestimonialsSection = () => {
                 </p>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-12">
-          {[
-            { value: '2015', label: 'Год основания' },
-            { value: '5000+', label: 'Доставленных грузов' },
-            { value: '98%', label: 'Довольных клиентов' },
-            { value: '12 дн', label: 'Средний срок доставки' },
-          ].map((stat) => (
-            <AnimatedCounter key={stat.label} value={stat.value} label={stat.label} />
           ))}
         </div>
       </div>

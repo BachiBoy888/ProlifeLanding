@@ -140,6 +140,11 @@
   .testimonial-card {
     background: hsl(220, 12%, 10%);
     border: 1px solid rgba(244, 246, 248, 0.06);
+    transition: border-color 0.3s ease;
+  }
+
+  .testimonial-card:hover {
+    border-color: rgba(74, 144, 164, 0.2);
   }
   
   .btn-primary {

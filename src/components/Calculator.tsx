@@ -7,12 +7,8 @@ import {
   MessageCircle,
   X,
   Check,
-  ChevronRight,
   User,
-  Building2,
-  Mail,
   Phone,
-  FileText,
   AlertCircle,
 } from 'lucide-react';
 
@@ -68,7 +64,7 @@ const PACKAGES = [
 const CITIES = ['Гуанчжоу', 'Иу', 'Шэньчжэнь', 'Фошань', 'Дунгуань', 'Другой город'];
 
 type PackageId = 'economy' | 'standard' | 'premium';
-type Step = 'form' | 'result' | 'contact' | 'success';
+type Step = 'form' | 'result' | 'success';
 
 interface FormData {
   weight: string;
@@ -227,7 +223,7 @@ const Calculator = () => {
 
   const result = step !== 'form' ? calcResult() : null;
 
-  const stepOrder: Step[] = ['form', 'result', 'contact', 'success'];
+  const stepOrder: Step[] = ['form', 'result', 'success'];
   const currentStepIdx = stepOrder.indexOf(step);
 
   const modal = (
@@ -259,13 +255,12 @@ const Calculator = () => {
             <div>
               <h3 className="font-display font-semibold text-[#F4F6F8] text-base">
                 {step === 'form' && 'Расчёт стоимости'}
-                {step === 'result' && 'Предварительный расчёт'}
-                {step === 'contact' && 'Контактные данные'}
+                {step === 'result' && 'Результат и оформление'}
                 {step === 'success' && 'Заявка отправлена'}
               </h3>
               {step !== 'success' && (
                 <div className="flex items-center gap-1 mt-1">
-                  {(['form', 'result', 'contact'] as Step[]).map((s, i) => (
+                  {(['form', 'result'] as Step[]).map((s, i) => (
                     <div
                       key={s}
                       className={`h-1 rounded-full transition-all duration-300 ${
@@ -388,10 +383,12 @@ const Calculator = () => {
             </motion.div>
           )}
 
-          {/* ── ШАГ 2: РЕЗУЛЬТАТ ── */}
+          {/* ── ШАГ 2: РЕЗУЛЬТАТ + ЗАЯВКА (объединено) ── */}
           {step === 'result' && result && (
             <motion.div key="result" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.18, ease: 'easeOut' }}>
             <div className="space-y-3.5">
+
+              {/* Цена и срок */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-[#13151E] rounded-lg p-3 text-center col-span-1">
                   <p className="mono-label text-[#A9B1BA] mb-1">Стоимость</p>
@@ -403,7 +400,8 @@ const Calculator = () => {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-[#4A90A4]/30 bg-[#4A90A4]/5 p-4">
+              {/* Пакет */}
+              <div className="rounded-lg border border-[#4A90A4]/30 bg-[#4A90A4]/5 p-3.5">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-display font-semibold text-[#F4F6F8] text-sm">
                     Пакет: {selectedPackage.name}
@@ -420,159 +418,86 @@ const Calculator = () => {
                 </div>
               </div>
 
-              <div className="bg-[#13151E] rounded-lg p-4 space-y-1.5">
-                <p className="mono-label text-[#A9B1BA]">Как посчитано:</p>
-                {result.density !== null && (
-                  <p className="text-xs text-[#A9B1BA]">
-                    Плотность: {form.weight} / {form.volume} = {result.density} кг/м³
-                    {result.base === 'kg' && ' → тарифицируем по кг'}
-                    {result.base === 'm3' && ' → тарифицируем по м³'}
-                    {result.base === 'max' && ' → берём большее из двух'}
-                  </p>
-                )}
-                <p className="text-xs text-[#A9B1BA]">
-                  По кг: {form.weight || 0} × ${selectedPackage.rateKg} = ${result.byKg}
+              {/* Инлайн форма — без отдельного шага */}
+              <div className="rounded-lg border border-white/[0.08] bg-[#13151E] p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <MessageCircle className="w-4 h-4 text-[#4A90A4]" />
+                  <p className="font-display font-semibold text-[#F4F6F8] text-sm">Получить точный расчёт</p>
+                </div>
+                <p className="text-xs text-[#A9B1BA] mb-3 leading-relaxed">
+                  Менеджер свяжется в течение 15 минут и подтвердит итоговую стоимость.
                 </p>
-                {parseFloat(form.volume) > 0 && (
-                  <p className="text-xs text-[#A9B1BA]">
-                    По м³: {form.volume} × ${selectedPackage.rateM3} = ${result.byM3}
-                  </p>
+                <div className="grid grid-cols-2 gap-2.5 mb-3">
+                  <div>
+                    <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-1.5">
+                      <User className="w-3 h-3" />Имя
+                    </label>
+                    <input
+                      type="text"
+                      value={contact.name}
+                      onChange={(e) => setContact({ ...contact, name: e.target.value })}
+                      placeholder="Иван"
+                      className="input-field text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-1.5">
+                      <Phone className="w-3 h-3" />Телефон *
+                    </label>
+                    <input
+                      type="tel"
+                      value={contact.phone}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        const filtered = raw.startsWith('+')
+                          ? '+' + raw.slice(1).replace(/[^\d]/g, '')
+                          : raw.replace(/[^\d]/g, '');
+                        setContact({ ...contact, phone: filtered });
+                      }}
+                      placeholder="+996 ___ __ __ __"
+                      className="input-field text-sm"
+                    />
+                  </div>
+                </div>
+
+                {submitError && (
+                  <div className="flex items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 mb-3">
+                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                    <p className="text-xs text-red-300 leading-relaxed">{submitError}</p>
+                  </div>
                 )}
-                {result.surcharge > 0 && (
-                  <p className="text-xs text-[#A9B1BA]">
-                    Надбавка ({form.city}): +${result.surcharge}
-                  </p>
-                )}
-                <p className="text-xs text-[#F4F6F8] font-medium">
-                  Итого:{' '}
-                  {result.base === 'kg' && `$${result.byKg}`}
-                  {result.base === 'm3' && `$${result.byM3}`}
-                  {result.base === 'max' && `max($${result.byKg}, $${result.byM3}) = $${Math.max(result.byKg, result.byM3)}`}
-                  {result.surcharge > 0 && ` + $${result.surcharge}`}
-                  {' '}= ~${result.price}
-                  {result.price === MIN_PRICE && ' (минимальная стоимость)'}
+
+                <button
+                  onClick={handleSendRequest}
+                  disabled={!contact.phone.trim() || loading}
+                  className="btn-primary w-full py-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <>
+                      <span className="w-4 h-4 mr-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Отправка...
+                    </>
+                  ) : (
+                    <>
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Отправить заявку
+                    </>
+                  )}
+                </button>
+                <p className="text-xs text-[#A9B1BA] text-center mt-2">
+                  * Только телефон обязателен · Без предоплаты
                 </p>
               </div>
 
-              <div className="flex gap-3">
-                <button onClick={() => setStep('contact')} className="btn-primary flex-1 text-sm">
-                  Получить точный расчёт
-                  <ChevronRight className="w-4 h-4 ml-2" />
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => setStep('form')}
+                  className="text-xs text-[#A9B1BA] hover:text-[#F4F6F8] transition-colors"
+                >
+                  ← Изменить параметры
                 </button>
-                <button onClick={() => setStep('form')} className="btn-outline text-sm px-4">
-                  Изменить
-                </button>
+                <p className="text-xs text-[#A9B1BA]">* Предварительный расчёт</p>
               </div>
-              <p className="text-xs text-[#A9B1BA] text-center">
-                * Предварительный расчёт. Точная цена — после подтверждения менеджером.
-              </p>
-            </div>
-            </motion.div>
-          )}
-
-          {/* ── ШАГ 3: КОНТАКТЫ ── */}
-          {step === 'contact' && (
-            <motion.div key="contact" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.18, ease: 'easeOut' }}>
-            <div className="space-y-3.5">
-              <p className="text-sm text-[#C8D0D8] leading-relaxed">
-                Оставьте контакты — менеджер свяжется в течение часа и подтвердит точную стоимость.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-2">
-                    <User className="w-3 h-3" />Имя
-                  </label>
-                  <input
-                    type="text"
-                    value={contact.name}
-                    onChange={(e) => setContact({ ...contact, name: e.target.value })}
-                    placeholder="Иван Иванов"
-                    className="input-field text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-2">
-                    <Phone className="w-3 h-3" />Телефон *
-                  </label>
-                  <input
-                    type="tel"
-                    value={contact.phone}
-                    onChange={(e) => {
-                      const raw = e.target.value;
-                      // Allow only digits and a single leading plus
-                      const filtered = raw.startsWith('+')
-                        ? '+' + raw.slice(1).replace(/[^\d]/g, '')
-                        : raw.replace(/[^\d]/g, '');
-                      setContact({ ...contact, phone: filtered });
-                    }}
-                    placeholder="+996 ___ __ __ __"
-                    className="input-field text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-2">
-                    <Building2 className="w-3 h-3" />Компания
-                  </label>
-                  <input
-                    type="text"
-                    value={contact.company}
-                    onChange={(e) => setContact({ ...contact, company: e.target.value })}
-                    placeholder="ООО ..."
-                    className="input-field text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-2">
-                    <Mail className="w-3 h-3" />Email
-                  </label>
-                  <input
-                    type="email"
-                    value={contact.email}
-                    onChange={(e) => setContact({ ...contact, email: e.target.value })}
-                    placeholder="email@company.com"
-                    className="input-field text-sm"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-2">
-                  <FileText className="w-3 h-3" />Примечание
-                </label>
-                <textarea
-                  value={contact.note}
-                  onChange={(e) => setContact({ ...contact, note: e.target.value })}
-                  placeholder="Тип груза, особые условия..."
-                  className="input-field text-sm resize-none"
-                  rows={2}
-                />
-              </div>
-
-              {/* Сообщение об ошибке */}
-              {submitError && (
-                <div className="flex items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3">
-                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                  <p className="text-xs text-red-300 leading-relaxed">{submitError}</p>
-                </div>
-              )}
-
-              <button
-                onClick={handleSendRequest}
-                disabled={!contact.phone.trim() || loading}
-                className="btn-primary w-full py-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <>
-                    <span className="w-4 h-4 mr-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Отправка...
-                  </>
-                ) : (
-                  <>
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Отправить заявку
-                  </>
-                )}
-              </button>
-              <p className="text-xs text-[#A9B1BA] text-center">* Обязательно только телефон</p>
             </div>
             </motion.div>
           )}
@@ -656,9 +581,12 @@ const Calculator = () => {
           whileTap={{ scale: 0.97 }}
           transition={{ duration: 0.12 }}
         >
-          Рассчитать
+          Рассчитать стоимость
           <ArrowRight className="w-4 h-4 ml-2" />
         </motion.button>
+        <p className="text-xs text-[#A9B1BA] text-center mt-2">
+          Ответим за 15 минут · Без предоплаты
+        </p>
       </div>
 
       {/* Модальное окно рендерится в document.body через portal */}
