@@ -104,18 +104,9 @@ const HeroSection = () => {
       return () => ctx.revert();
     });
 
-    mm.add('(max-width: 1023px)', () => {
-      const ctx = gsap.context(() => {
-        const scrollTl = gsap.timeline({
-          scrollTrigger: { trigger: section, start: 'top top', end: '+=80%', pin: true, scrub: 0.3 },
-        });
-        // Mobile: opacity-only exit, no x/y translations that cause jitter
-        scrollTl.fromTo(headlineRef.current, { opacity: 1 }, { opacity: 0, ease: 'power2.in', duration: 0.3 }, 0.8);
-        scrollTl.fromTo(calculatorRef.current, { opacity: 1 }, { opacity: 0, ease: 'power2.in', duration: 0.3 }, 0.8);
-        scrollTl.fromTo([subheadlineRef.current, ctaRef.current], { opacity: 1 }, { opacity: 0, ease: 'power2.in', duration: 0.3 }, 0.8);
-      }, section);
-      return () => ctx.revert();
-    });
+    // Mobile: no pin — section scrolls naturally with the document.
+    // A pinned section with fixed height was creating a secondary scroll context
+    // (especially in Instagram WebView), making it impossible to scroll past the hero.
 
     return () => mm.revert();
   }, []);
@@ -159,12 +150,11 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-[#0B0C10]/80 to-transparent" />
       </div>
 
-      {/* Content (left side)
-          Mobile: justify-start + pt-20 so content begins reliably below the
-          fixed 64px header with a small breathing room. This prevents the
-          headline from being hidden under the header in Safari/WebView.
-          Desktop: justify-center unchanged. */}
-      <div className="relative z-10 h-full flex flex-col justify-start pt-20 lg:justify-center lg:pt-0 px-6 lg:px-[7vw]">
+      {/* Content
+          Mobile: no h-full (section uses min-height, not fixed height), flex column
+          from top with pt-20 to clear the fixed 64px header.
+          Desktop: h-full + justify-center for vertically centered layout. */}
+      <div className="relative z-10 lg:h-full flex flex-col justify-start pt-20 lg:justify-center lg:pt-0 px-6 lg:px-[7vw] pb-10 lg:pb-0">
         {/* Headline */}
         <div
           ref={headlineRef}
