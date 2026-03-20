@@ -33,17 +33,8 @@ const CoverageSection = () => {
       return () => ctx.revert();
     });
 
-    mm.add('(max-width: 1023px)', () => {
-      const ctx = gsap.context(() => {
-        const scrollTl = gsap.timeline({
-          scrollTrigger: { trigger: section, start: 'top top', end: '+=80%', pin: true, scrub: 0.3 },
-        });
-        // Mobile: no entrance — content starts visible; short exit in the last ~27% of pin range
-        scrollTl.fromTo(headlineRef.current, { opacity: 1 }, { opacity: 0, ease: 'power2.in', duration: 0.3 }, 0.8);
-        scrollTl.fromTo(contentRef.current, { opacity: 1 }, { opacity: 0, ease: 'power2.in', duration: 0.3 }, 0.8);
-      }, section);
-      return () => ctx.revert();
-    });
+    // Mobile: no pin — section scrolls naturally as part of the document.
+    // Pinned sections on mobile create scroll traps in in-app browsers (Instagram/WebView).
 
     return () => mm.revert();
   }, []);
@@ -93,7 +84,7 @@ const CoverageSection = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-center px-6 lg:px-[7vw]">
+      <div className="relative z-10 lg:h-full flex flex-col justify-center pt-20 pb-10 lg:pt-0 lg:pb-0 px-6 lg:px-[7vw]">
         {/* Headline */}
         <div
           ref={headlineRef}
