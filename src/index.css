@@ -194,14 +194,17 @@
     overflow: hidden;
   }
 
-  /* On mobile the exit animation is opacity-only (no translations),
-     so we don't need overflow: hidden to clip anything.
-     Allowing overflow-y: visible prevents content from being clipped
-     when the viewport is shorter than expected (in-app browsers). */
+  /* On mobile the section is not pinned — it scrolls naturally with the page.
+     Use min-height instead of fixed height so the section grows to fit content,
+     which prevents any internal scroll area from forming.
+     IMPORTANT: Do NOT set overflow-x:hidden + overflow-y:visible together —
+     per CSS spec this computes overflow-y to `auto`, creating a scroll trap. */
   @media (max-width: 1023px) {
     .pinned-section {
-      overflow-x: hidden;
-      overflow-y: visible;
+      height: auto;
+      min-height: 100vh;
+      min-height: calc(var(--vh, 1vh) * 100);
+      min-height: 100svh;
     }
   }
 }
