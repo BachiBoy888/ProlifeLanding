@@ -33,6 +33,23 @@ function App() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
+  // --vh custom property: set once and on resize/orientation change.
+  // window.innerHeight reflects the actual visible area in all browsers
+  // including Instagram/Facebook WebView where 100vh is unreliable.
+  // CSS cascade: 100svh (modern) > calc(var(--vh)*100) (JS) > 100vh (fallback).
+  useEffect(() => {
+    const setVH = () => {
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    };
+    setVH();
+    window.addEventListener('resize', setVH, { passive: true });
+    window.addEventListener('orientationchange', setVH);
+    return () => {
+      window.removeEventListener('resize', setVH);
+      window.removeEventListener('orientationchange', setVH);
+    };
+  }, []);
+
   // Slide navigation for pinned sections
   useEffect(() => {
     const SLIDE_DURATION = 0.9;   // секунды — длительность анимированного перехода

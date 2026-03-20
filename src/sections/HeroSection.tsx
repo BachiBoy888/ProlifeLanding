@@ -27,13 +27,19 @@ const HeroSection = () => {
         0
       );
 
-      // Headline lines stagger
+      // Headline lines stagger — no rotateX on mobile to avoid 3D rendering
+      // glitches in WebView-based browsers (Instagram, Facebook in-app browser)
       const headlineLines = headlineRef.current?.querySelectorAll('.headline-line');
       if (headlineLines) {
+        const isMobile = window.innerWidth < 1024;
         tl.fromTo(
           headlineLines,
-          { y: 60, opacity: 0, rotateX: 18 },
-          { y: 0, opacity: 1, rotateX: 0, duration: 0.7, stagger: 0.08 },
+          isMobile
+            ? { y: 20, opacity: 0 }
+            : { y: 60, opacity: 0, rotateX: 18 },
+          isMobile
+            ? { y: 0, opacity: 1, duration: 0.5, stagger: 0.06 }
+            : { y: 0, opacity: 1, rotateX: 0, duration: 0.7, stagger: 0.08 },
           0.15
         );
       }
@@ -153,12 +159,16 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-[#0B0C10]/80 to-transparent" />
       </div>
 
-      {/* Content (left side) */}
-      <div className="relative z-10 h-full flex flex-col justify-center px-6 lg:px-[7vw]">
+      {/* Content (left side)
+          Mobile: justify-start + pt-20 so content begins reliably below the
+          fixed 64px header with a small breathing room. This prevents the
+          headline from being hidden under the header in Safari/WebView.
+          Desktop: justify-center unchanged. */}
+      <div className="relative z-10 h-full flex flex-col justify-start pt-20 lg:justify-center lg:pt-0 px-6 lg:px-[7vw]">
         {/* Headline */}
         <div
           ref={headlineRef}
-          className="mb-6 lg:mb-8 lg:max-w-[50vw]"
+          className="mb-4 lg:mb-8 lg:max-w-[50vw]"
         >
           <div className="hero-headline text-[#F4F6F8] leading-[0.88]" style={{ fontSize: 'clamp(40px, 7vw, 108px)' }}>
             <div className="headline-line">ДОСТАВКА</div>
@@ -170,7 +180,7 @@ const HeroSection = () => {
         {/* Subheadline */}
         <div
           ref={subheadlineRef}
-          className="mb-6 lg:mb-8 lg:max-w-[44vw]"
+          className="mb-4 lg:mb-8 lg:max-w-[44vw]"
         >
           <p className="mono-label text-[#A9B1BA]">
             В БИШКЕК · ТАМОЖНЯ ВКЛЮЧЕНА · ЛИЧНЫЙ МЕНЕДЖЕР 24/7
@@ -184,7 +194,7 @@ const HeroSection = () => {
         {/* Calculator Panel */}
         <div
           ref={calculatorRef}
-          className="w-full lg:w-[44vw] mb-6"
+          className="w-full lg:w-[44vw] mb-4 lg:mb-6"
         >
           <Calculator />
         </div>
