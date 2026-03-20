@@ -1,4 +1,5 @@
 import { useState, useRef, useLayoutEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MessageCircle, Phone, MapPin, Clock, Mail, Calendar, Shield, User, Send, ExternalLink } from 'lucide-react';
@@ -86,22 +87,28 @@ const ContactSection = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <a
+              <motion.a
                 href="https://api.whatsapp.com/send?phone=996990111125&text="
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: 0.12 }}
               >
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Написать в WhatsApp
-              </a>
-              <a
+              </motion.a>
+              <motion.a
                 href="tel:+996990111125"
                 className="btn-outline"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: 0.12 }}
               >
                 <Phone className="w-5 h-5 mr-2" />
                 +996 990 11 11 25
-              </a>
+              </motion.a>
             </div>
 
             {/* Callback form */}
@@ -128,11 +135,28 @@ const ContactSection = () => {
                     className="input-field text-sm pl-10"
                   />
                 </div>
-                {phoneError && <p className="text-xs text-red-400">{phoneError}</p>}
-                <button onClick={handleCallback} className="btn-primary w-full text-sm">
+                <AnimatePresence>
+                  {phoneError && (
+                    <motion.p
+                      className="text-xs text-red-400"
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      {phoneError}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+                <motion.button
+                  onClick={handleCallback}
+                  className="btn-primary w-full text-sm"
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ duration: 0.12 }}
+                >
                   <Send className="w-4 h-4 mr-2" />
                   Отправить заявку
-                </button>
+                </motion.button>
               </div>
             </div>
 

@@ -1,4 +1,5 @@
 import { useRef, useLayoutEffect } from 'react';
+import { motion } from 'motion/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
@@ -152,9 +153,11 @@ const ServicesSection = () => {
             {deliveryModes.map((mode) => {
               const Icon = mode.icon;
               return (
-                <div
+                <motion.div
                   key={mode.title}
                   className="bg-[#14161B] border border-white/5 rounded-lg p-5"
+                  whileHover={{ y: -4, borderColor: 'rgba(74,144,164,0.3)' }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-9 h-9 rounded-md bg-[#4A90A4]/10 flex items-center justify-center shrink-0">
@@ -166,7 +169,7 @@ const ServicesSection = () => {
                     </div>
                   </div>
                   <p className="text-xs text-[#A9B1BA] leading-relaxed">{mode.description}</p>
-                </div>
+                </motion.div>
               );
             })}
           </div>
