@@ -11,6 +11,7 @@ import {
   Phone,
   AlertCircle,
 } from 'lucide-react';
+import ConsentCheckbox from './ConsentCheckbox';
 
 // Пороги плотности для выбора базы расчёта (кг/м³)
 const DENSITY_LOW = 200;   // ниже → считать по м³
@@ -101,6 +102,8 @@ const Calculator = () => {
   });
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [consentChecked, setConsentChecked] = useState(false);
+  const [consentError, setConsentError] = useState('');
 
   const selectedPackage = PACKAGES.find((p) => p.id === form.packageId)!;
 
@@ -158,9 +161,16 @@ const Calculator = () => {
   const closeModal = () => {
     setIsOpen(false);
     document.body.style.overflow = '';
+    setConsentChecked(false);
+    setConsentError('');
   };
 
   const handleSendRequest = async () => {
+    if (!consentChecked) {
+      setConsentError('Необходимо согласие на обработку персональных данных');
+      return;
+    }
+    setConsentError('');
     setLoading(true);
     setSubmitError('');
 
@@ -460,8 +470,16 @@ const Calculator = () => {
                   </div>
                 </div>
 
+                <div className="mb-3">
+                  <ConsentCheckbox
+                    checked={consentChecked}
+                    onChange={(v) => { setConsentChecked(v); if (v) setConsentError(''); }}
+                    error={consentError}
+                  />
+                </div>
+
                 {submitError && (
-                  <div className="flex items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 mb-3">
+                  <div className="flex items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3">
                     <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
                     <p className="text-xs text-red-300 leading-relaxed">{submitError}</p>
                   </div>

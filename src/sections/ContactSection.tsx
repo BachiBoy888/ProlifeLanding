@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MessageCircle, Phone, MapPin, Clock, Mail, Calendar, Shield, User, Send, ExternalLink } from 'lucide-react';
+import ConsentCheckbox from '../components/ConsentCheckbox';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,6 +15,8 @@ const ContactSection = () => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [phoneError, setPhoneError] = useState('');
+  const [consentChecked, setConsentChecked] = useState(false);
+  const [consentError, setConsentError] = useState('');
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
@@ -59,7 +62,12 @@ const ContactSection = () => {
       setPhoneError('Введите номер телефона');
       return;
     }
+    if (!consentChecked) {
+      setConsentError('Необходимо согласие на обработку персональных данных');
+      return;
+    }
     setPhoneError('');
+    setConsentError('');
     const parts = [
       'Здравствуйте! Прошу перезвонить.',
       name.trim() ? `Имя: ${name.trim()}` : null,
@@ -148,6 +156,11 @@ const ContactSection = () => {
                     </motion.p>
                   )}
                 </AnimatePresence>
+                <ConsentCheckbox
+                  checked={consentChecked}
+                  onChange={(v) => { setConsentChecked(v); if (v) setConsentError(''); }}
+                  error={consentError}
+                />
                 <motion.button
                   onClick={handleCallback}
                   className="btn-primary w-full text-sm"

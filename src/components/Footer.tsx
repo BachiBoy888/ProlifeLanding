@@ -22,6 +22,12 @@ const Footer = () => {
           {/* Links */}
           <div className="flex items-center gap-6">
             <a
+              href="#/privacy"
+              className="text-sm text-[#A9B1BA] hover:text-[#F4F6F8] transition-colors"
+            >
+              Политика конфиденциальности
+            </a>
+            <a
               href="https://prolife.kg/"
               target="_blank"
               rel="noopener noreferrer"
