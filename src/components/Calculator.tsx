@@ -236,7 +236,7 @@ const Calculator = () => {
         <motion.div
           className="fixed inset-0 z-[200] flex items-center justify-center p-4"
           style={{ background: 'rgba(11, 12, 16, 0.92)', backdropFilter: 'blur(12px)' }}
-          onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
+          onClick={(e: React.MouseEvent<HTMLDivElement>) => { if (e.target === e.currentTarget) closeModal(); }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
