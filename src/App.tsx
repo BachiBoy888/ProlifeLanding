@@ -17,18 +17,23 @@ import TestimonialsSection from './sections/TestimonialsSection';
 import ContactSection from './sections/ContactSection';
 import CookiesBanner from './components/CookiesBanner';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import LabPage from './lab/LabPage';
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
+type Page = 'home' | 'privacy' | 'lab';
+
+const getPage = (hash: string): Page => {
+  if (hash === '#/privacy') return 'privacy';
+  if (hash === '#/lab') return 'lab';
+  return 'home';
+};
+
 function App() {
-  const [page, setPage] = useState(() =>
-    window.location.hash === '#/privacy' ? 'privacy' : 'home'
-  );
+  const [page, setPage] = useState<Page>(() => getPage(window.location.hash));
 
   useEffect(() => {
-    const onHashChange = () => {
-      setPage(window.location.hash === '#/privacy' ? 'privacy' : 'home');
-    };
+    const onHashChange = () => setPage(getPage(window.location.hash));
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
@@ -182,6 +187,10 @@ function App() {
         <PrivacyPolicy />
       </>
     );
+  }
+
+  if (page === 'lab') {
+    return <LabPage />;
   }
 
   return (
