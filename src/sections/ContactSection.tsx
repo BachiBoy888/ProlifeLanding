@@ -1,5 +1,5 @@
 import { useState, useRef, useLayoutEffect } from 'react';
-import { trackEvent } from '../lib/analytics';
+import { trackEvent, getUtmParams } from '../lib/analytics';
 import { motion, AnimatePresence } from 'motion/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -70,7 +70,7 @@ const ContactSection = () => {
     }
     setPhoneError('');
     setConsentError('');
-    trackEvent('lead_submitted');
+    trackEvent('lead_submitted', { source: 'contact_form', ...getUtmParams() });
     const parts = [
       'Здравствуйте! Прошу перезвонить.',
       name.trim() ? `Имя: ${name.trim()}` : null,
@@ -148,7 +148,7 @@ const ContactSection = () => {
                       setPhoneError('');
                       if (!leadStartedRef.current) {
                         leadStartedRef.current = true;
-                        trackEvent('lead_started');
+                        trackEvent('lead_started', { source: 'contact_form' });
                       }
                     }}
                     placeholder="+996 ___ __ __ __"

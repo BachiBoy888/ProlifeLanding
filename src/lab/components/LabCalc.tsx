@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageCircle, Check, Zap } from 'lucide-react';
-import { trackEvent } from '../../lib/analytics';
+import { trackEvent, getUtmParams } from '../../lib/analytics';
 
 const MIN_PRICE = 150;
 
@@ -240,7 +240,7 @@ const LabCalc = () => {
                   weight_range: weight,
                   estimated_price: price,
                 });
-                trackEvent('lead_submitted');
+                trackEvent('lead_submitted', { source: 'lab_calculator', ...getUtmParams() });
               }}
               className="flex items-center justify-center gap-3 w-full py-4 rounded-xl font-display font-semibold text-[#050608] bg-[#4A90A4] text-base"
               style={{ boxShadow: '0 0 40px rgba(74,144,164,0.45), 0 0 80px rgba(74,144,164,0.15)' }}

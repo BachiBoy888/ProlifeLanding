@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { trackEvent } from '../lib/analytics';
+import { trackEvent, getUtmParams } from '../lib/analytics';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import {
@@ -217,7 +217,7 @@ const Calculator = () => {
       });
 
       if (res.ok) {
-        trackEvent('lead_submitted');
+        trackEvent('lead_submitted', { source: 'calculator', ...getUtmParams() });
         setStep('success');
         return;
       }
@@ -463,7 +463,7 @@ const Calculator = () => {
                       onChange={(e) => {
                         if (!leadStartedRef.current) {
                           leadStartedRef.current = true;
-                          trackEvent('lead_started');
+                          trackEvent('lead_started', { source: 'calculator' });
                         }
                         setContact({ ...contact, name: e.target.value });
                       }}
@@ -485,7 +485,7 @@ const Calculator = () => {
                           : raw.replace(/[^\d]/g, '');
                         if (!leadStartedRef.current) {
                           leadStartedRef.current = true;
-                          trackEvent('lead_started');
+                          trackEvent('lead_started', { source: 'calculator' });
                         }
                         setContact({ ...contact, phone: filtered });
                       }}
