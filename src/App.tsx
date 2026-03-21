@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { trackEvent } from './lib/analytics';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
@@ -23,6 +24,9 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 type Page = 'home' | 'privacy' | 'lab';
 
+// Module-level flag — protects landing_opened from double-fire in React StrictMode dev
+let landingOpenedOnce = false;
+
 const getPage = (hash: string): Page => {
   if (hash === '#/privacy') return 'privacy';
   if (hash === '#/lab') return 'lab';
@@ -32,8 +36,20 @@ const getPage = (hash: string): Page => {
 function App() {
   const [page, setPage] = useState<Page>(() => getPage(window.location.hash));
 
+  // Track initial page view once (StrictMode-safe via module-level flag)
   useEffect(() => {
-    const onHashChange = () => setPage(getPage(window.location.hash));
+    if (!landingOpenedOnce) {
+      landingOpenedOnce = true;
+      trackEvent('landing_opened', { page: getPage(window.location.hash) });
+    }
+  }, []);
+
+  useEffect(() => {
+    const onHashChange = () => {
+      const newPage = getPage(window.location.hash);
+      setPage(newPage);
+      trackEvent('landing_opened', { page: newPage });
+    };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);

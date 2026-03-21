@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageCircle, Check, Zap } from 'lucide-react';
+import { trackEvent } from '../../lib/analytics';
 
 const MIN_PRICE = 150;
 
@@ -232,6 +233,15 @@ const LabCalc = () => {
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => {
+                trackEvent('calculator_completed', {
+                  package: pkg,
+                  city,
+                  weight_range: weight,
+                  estimated_price: price,
+                });
+                trackEvent('lead_submitted');
+              }}
               className="flex items-center justify-center gap-3 w-full py-4 rounded-xl font-display font-semibold text-[#050608] bg-[#4A90A4] text-base"
               style={{ boxShadow: '0 0 40px rgba(74,144,164,0.45), 0 0 80px rgba(74,144,164,0.15)' }}
               whileHover={{ scale: 1.02, boxShadow: '0 0 60px rgba(74,144,164,0.6), 0 0 100px rgba(74,144,164,0.22)' }}

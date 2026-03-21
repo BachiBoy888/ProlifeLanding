@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { ArrowDown, Package, Shield, Clock, Star } from 'lucide-react';
+import { trackEvent } from '../../lib/analytics';
 
 interface LabHeroProps {
   onCalcClick: () => void;
@@ -77,7 +78,10 @@ const LabHero = ({ onCalcClick }: LabHeroProps) => {
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
         >
           <motion.button
-            onClick={onCalcClick}
+            onClick={() => {
+              onCalcClick();
+              trackEvent('cta_clicked', { location: 'lab_hero_calc' });
+            }}
             className="px-8 py-4 rounded-xl font-display font-semibold text-[#050608] bg-[#4A90A4] text-base w-full sm:w-auto"
             style={{ boxShadow: '0 0 40px rgba(74,144,164,0.5), 0 0 80px rgba(74,144,164,0.18)' }}
             whileHover={{ scale: 1.04, boxShadow: '0 0 60px rgba(74,144,164,0.65), 0 0 100px rgba(74,144,164,0.25)' }}
@@ -90,6 +94,7 @@ const LabHero = ({ onCalcClick }: LabHeroProps) => {
             href={`https://api.whatsapp.com/send?phone=996990111125&text=${encodeURIComponent('Здравствуйте, хочу узнать о доставке из Китая')}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackEvent('cta_clicked', { location: 'lab_hero_whatsapp' })}
             className="px-8 py-4 rounded-xl font-display font-semibold text-[#F4F6F8] text-base border border-white/15 bg-white/[0.04] w-full sm:w-auto text-center"
             whileHover={{ borderColor: 'rgba(255,255,255,0.3)', backgroundColor: 'rgba(255,255,255,0.07)' }}
             whileTap={{ scale: 0.97 }}
