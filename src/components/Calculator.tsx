@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { trackEvent } from '../lib/analytics';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import {
@@ -104,6 +105,7 @@ const Calculator = () => {
   const [submitError, setSubmitError] = useState('');
   const [consentChecked, setConsentChecked] = useState(false);
   const [consentError, setConsentError] = useState('');
+  const leadStartedRef = useRef(false);
 
   const selectedPackage = PACKAGES.find((p) => p.id === form.packageId)!;
 
@@ -156,6 +158,8 @@ const Calculator = () => {
     setStep('form');
     setIsOpen(true);
     document.body.style.overflow = 'hidden';
+    trackEvent('cta_clicked', { location: 'hero' });
+    trackEvent('calculator_started');
   };
 
   const closeModal = () => {
@@ -163,6 +167,7 @@ const Calculator = () => {
     document.body.style.overflow = '';
     setConsentChecked(false);
     setConsentError('');
+    leadStartedRef.current = false;
   };
 
   const handleSendRequest = async () => {
@@ -212,6 +217,7 @@ const Calculator = () => {
       });
 
       if (res.ok) {
+        trackEvent('lead_submitted');
         setStep('success');
         return;
       }
@@ -379,7 +385,16 @@ const Calculator = () => {
               </div>
 
               <button
-                onClick={() => setStep('result')}
+                onClick={() => {
+                  setStep('result');
+                  trackEvent('calculator_completed', {
+                    package: form.packageId,
+                    city: form.city,
+                    weight: parseFloat(form.weight) || undefined,
+                    volume: parseFloat(form.volume) || undefined,
+                    estimated_price: calcResult().price,
+                  });
+                }}
                 disabled={!form.weight && !form.volume}
                 className="btn-primary w-full py-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -445,7 +460,13 @@ const Calculator = () => {
                     <input
                       type="text"
                       value={contact.name}
-                      onChange={(e) => setContact({ ...contact, name: e.target.value })}
+                      onChange={(e) => {
+                        if (!leadStartedRef.current) {
+                          leadStartedRef.current = true;
+                          trackEvent('lead_started');
+                        }
+                        setContact({ ...contact, name: e.target.value });
+                      }}
                       placeholder="Иван"
                       className="input-field text-sm"
                     />
@@ -462,6 +483,10 @@ const Calculator = () => {
                         const filtered = raw.startsWith('+')
                           ? '+' + raw.slice(1).replace(/[^\d]/g, '')
                           : raw.replace(/[^\d]/g, '');
+                        if (!leadStartedRef.current) {
+                          leadStartedRef.current = true;
+                          trackEvent('lead_started');
+                        }
                         setContact({ ...contact, phone: filtered });
                       }}
                       placeholder="+996 ___ __ __ __"

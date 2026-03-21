@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { MessageCircle, ArrowRight } from 'lucide-react';
+import { trackEvent } from '../../lib/analytics';
 
 const LabFinalCTA = () => {
   const waUrl = `https://api.whatsapp.com/send?phone=996990111125&text=${encodeURIComponent('Здравствуйте, хочу оформить доставку из Китая')}`;
@@ -41,6 +42,7 @@ const LabFinalCTA = () => {
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent('cta_clicked', { location: 'lab_final_whatsapp' })}
               className="flex items-center gap-3 px-8 py-4 rounded-xl font-display font-semibold text-[#050608] bg-[#4A90A4] text-base w-full sm:w-auto justify-center"
               style={{ boxShadow: '0 0 50px rgba(74,144,164,0.5), 0 0 100px rgba(74,144,164,0.2)' }}
               whileHover={{ scale: 1.04, boxShadow: '0 0 70px rgba(74,144,164,0.65), 0 0 120px rgba(74,144,164,0.3)' }}
@@ -52,6 +54,7 @@ const LabFinalCTA = () => {
             </motion.a>
             <motion.a
               href="#calculator"
+              onClick={() => trackEvent('cta_clicked', { location: 'lab_final_calc' })}
               className="flex items-center gap-2 px-8 py-4 rounded-xl font-display font-semibold text-[#F4F6F8] text-base border border-white/15 bg-white/[0.04] w-full sm:w-auto justify-center"
               whileHover={{ borderColor: 'rgba(74,144,164,0.4)', backgroundColor: 'rgba(74,144,164,0.05)' }}
               whileTap={{ scale: 0.97 }}

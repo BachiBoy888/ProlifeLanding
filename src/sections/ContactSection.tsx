@@ -1,4 +1,5 @@
 import { useState, useRef, useLayoutEffect } from 'react';
+import { trackEvent } from '../lib/analytics';
 import { motion, AnimatePresence } from 'motion/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -17,6 +18,7 @@ const ContactSection = () => {
   const [phoneError, setPhoneError] = useState('');
   const [consentChecked, setConsentChecked] = useState(false);
   const [consentError, setConsentError] = useState('');
+  const leadStartedRef = useRef(false);
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
@@ -68,6 +70,7 @@ const ContactSection = () => {
     }
     setPhoneError('');
     setConsentError('');
+    trackEvent('lead_submitted');
     const parts = [
       'Здравствуйте! Прошу перезвонить.',
       name.trim() ? `Имя: ${name.trim()}` : null,
@@ -100,6 +103,7 @@ const ContactSection = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary"
+                onClick={() => trackEvent('cta_clicked', { location: 'contact_whatsapp' })}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ duration: 0.12 }}
@@ -110,6 +114,7 @@ const ContactSection = () => {
               <motion.a
                 href="tel:+996990111125"
                 className="btn-outline"
+                onClick={() => trackEvent('cta_clicked', { location: 'contact_phone' })}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ duration: 0.12 }}
@@ -138,7 +143,14 @@ const ContactSection = () => {
                   <input
                     type="tel"
                     value={phone}
-                    onChange={(e) => { setPhone(e.target.value); setPhoneError(''); }}
+                    onChange={(e) => {
+                      setPhone(e.target.value);
+                      setPhoneError('');
+                      if (!leadStartedRef.current) {
+                        leadStartedRef.current = true;
+                        trackEvent('lead_started');
+                      }
+                    }}
                     placeholder="+996 ___ __ __ __"
                     className="input-field text-sm pl-10"
                   />
