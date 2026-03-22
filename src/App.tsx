@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { trackEvent } from './lib/analytics';
+import { trackEvent, captureUtmParams, getUtmParams } from './lib/analytics';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
@@ -40,7 +40,8 @@ function App() {
   useEffect(() => {
     if (!landingOpenedOnce) {
       landingOpenedOnce = true;
-      trackEvent('landing_opened', { page: getPage(window.location.hash) });
+      captureUtmParams();
+      trackEvent('landing_opened', { page: getPage(window.location.hash), ...getUtmParams() });
     }
   }, []);
 
@@ -48,7 +49,7 @@ function App() {
     const onHashChange = () => {
       const newPage = getPage(window.location.hash);
       setPage(newPage);
-      trackEvent('landing_opened', { page: newPage });
+      trackEvent('landing_opened', { page: newPage, ...getUtmParams() });
     };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);

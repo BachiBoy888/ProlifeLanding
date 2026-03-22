@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
-import { trackEvent } from '../lib/analytics';
+import { trackEvent, getUtmParams, getUtmParamsCamel } from '../lib/analytics';
+import { submitLead, type LeadPayload } from '../lib/submitLead';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import {
@@ -82,8 +83,6 @@ interface ContactData {
   email: string;
   note: string;
 }
-
-const API_URL = import.meta.env.VITE_API_URL ?? '';
 
 const Calculator = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -171,62 +170,53 @@ const Calculator = () => {
   };
 
   const handleSendRequest = async () => {
+    if (!contact.name.trim()) {
+      setSubmitError('Пожалуйста, укажите ваше имя.');
+      return;
+    }
     if (!consentChecked) {
       setConsentError('Необходимо согласие на обработку персональных данных');
       return;
     }
     setConsentError('');
+    setSubmitError('');
     setLoading(true);
     setSubmitError('');
 
-    const result = calcResult();
+    const calcRes = calcResult();
     const pkg = selectedPackage;
 
-    const payload = {
-      // Контактные данные
-      name: contact.name.trim() || undefined,
+    const payload: LeadPayload = {
+      name: contact.name.trim(),
       phone: contact.phone.trim(),
       company: contact.company.trim() || undefined,
-      email: contact.email.trim() || undefined,
-      note: contact.note.trim() || undefined,
-
-      // Параметры груза
-      weight: parseFloat(form.weight) || undefined,
-      volume: parseFloat(form.volume) || undefined,
-      deliveryType: form.packageId,          // 'economy' | 'standard' | 'premium'
+      weight: parseFloat(form.weight) || 0,
+      volume: parseFloat(form.volume) || 0,
+      deliveryType: form.packageId,
       originCity: form.city,
-
-      // Предварительная оценка (фронтенд-расчёт)
-      estimatedPrice: result.price,
+      estimatedPrice: calcRes.price,
       estimatedCurrency: 'USD',
       estimatedDaysMin: pkg.daysMin,
       estimatedDaysMax: pkg.daysMax,
-
-      // Honeypot — всегда пустая строка
+      source: 'prolife_site',
+      leadEntryPoint: 'calculator',
+      ...getUtmParamsCamel(),
       website: '',
     };
 
     try {
-      const res = await fetch(`${API_URL}/api/leads`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Source': 'prolife_site',
-        },
-        body: JSON.stringify(payload),
-      });
+      const res = await submitLead(payload);
 
       if (res.ok) {
-        trackEvent('lead_submitted');
+        trackEvent('lead_submitted', { source: 'calculator', ...getUtmParams() });
         setStep('success');
         return;
       }
 
-      // Обработка конкретных статусов
       if (res.status === 400) {
         setSubmitError('Проверьте заполненные данные и попробуйте ещё раз.');
       } else if (res.status === 429) {
-        setSubmitError('Слишком много запросов. Пожалуйста, подождите немного и повторите.');
+        setSubmitError('Слишком много попыток. Попробуйте через минуту.');
       } else {
         setSubmitError('Ошибка на сервере. Попробуйте ещё раз или напишите нам напрямую.');
       }
@@ -455,7 +445,7 @@ const Calculator = () => {
                 <div className="grid grid-cols-2 gap-2.5 mb-3">
                   <div>
                     <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-1.5">
-                      <User className="w-3 h-3" />Имя
+                      <User className="w-3 h-3" />Имя *
                     </label>
                     <input
                       type="text"
@@ -463,7 +453,7 @@ const Calculator = () => {
                       onChange={(e) => {
                         if (!leadStartedRef.current) {
                           leadStartedRef.current = true;
-                          trackEvent('lead_started');
+                          trackEvent('lead_started', { source: 'calculator' });
                         }
                         setContact({ ...contact, name: e.target.value });
                       }}
@@ -485,7 +475,7 @@ const Calculator = () => {
                           : raw.replace(/[^\d]/g, '');
                         if (!leadStartedRef.current) {
                           leadStartedRef.current = true;
-                          trackEvent('lead_started');
+                          trackEvent('lead_started', { source: 'calculator' });
                         }
                         setContact({ ...contact, phone: filtered });
                       }}
@@ -512,7 +502,7 @@ const Calculator = () => {
 
                 <button
                   onClick={handleSendRequest}
-                  disabled={!contact.phone.trim() || loading}
+                  disabled={!contact.name.trim() || !contact.phone.trim() || loading}
                   className="btn-primary w-full py-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
