@@ -208,7 +208,17 @@ const Calculator = () => {
       const res = await submitLead(payload);
 
       if (res.ok) {
-        trackEvent('lead_submitted', { source: 'calculator', ...getUtmParams() });
+        trackEvent('lead_submitted_backend', {
+          source: 'calculator',
+          deliveryType: payload.deliveryType,
+          weight: payload.weight,
+          volume: payload.volume,
+          estimatedPrice: payload.estimatedPrice,
+          estimatedCurrency: payload.estimatedCurrency,
+          estimatedDaysMin: payload.estimatedDaysMin,
+          estimatedDaysMax: payload.estimatedDaysMax,
+          ...getUtmParams(),
+        });
         setStep('success');
         return;
       }

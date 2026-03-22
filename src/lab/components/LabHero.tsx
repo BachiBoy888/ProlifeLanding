@@ -94,7 +94,7 @@ const LabHero = ({ onCalcClick }: LabHeroProps) => {
             href={`https://api.whatsapp.com/send?phone=996990111125&text=${encodeURIComponent('Здравствуйте, хочу узнать о доставке из Китая')}`}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => trackEvent('cta_clicked', { location: 'lab_hero_whatsapp' })}
+            onClick={() => { trackEvent('whatsapp_opened', { source: 'lab_hero' }); trackEvent('cta_clicked', { location: 'lab_hero_whatsapp' }); }}
             className="px-8 py-4 rounded-xl font-display font-semibold text-[#F4F6F8] text-base border border-white/15 bg-white/[0.04] w-full sm:w-auto text-center"
             whileHover={{ borderColor: 'rgba(255,255,255,0.3)', backgroundColor: 'rgba(255,255,255,0.07)' }}
             whileTap={{ scale: 0.97 }}

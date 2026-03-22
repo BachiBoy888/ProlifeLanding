@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageCircle, Check, Zap, Phone, AlertCircle } from 'lucide-react';
 import { trackEvent, getUtmParams, getUtmParamsCamel } from '../../lib/analytics';
@@ -44,6 +44,7 @@ const LabCalc = () => {
   const [consentError, setConsentError] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const leadStartedRef = useRef(false);
 
   const selectedWeight = WEIGHT_RANGES.find((w) => w.id === weight)!;
   const selectedCity = CITIES.find((c) => c.id === city)!;
@@ -92,7 +93,13 @@ const LabCalc = () => {
 
       if (res.ok) {
         trackEvent('calculator_completed', { package: pkg, city, weight_range: weight, estimated_price: price });
-        trackEvent('lead_submitted', { source: 'lab_calculator', ...getUtmParams() });
+        trackEvent('lead_submitted_backend', {
+          source: 'lab_calculator',
+          weightLabel: selectedWeight.label,
+          estimatedPrice: price,
+          ...getUtmParams(),
+        });
+        trackEvent('whatsapp_opened', { source: 'lab_calculator', ...getUtmParams() });
         window.open(waUrl, '_blank', 'noopener,noreferrer');
         return;
       }
@@ -290,7 +297,14 @@ const LabCalc = () => {
                 <input
                   type="tel"
                   value={labPhone}
-                  onChange={(e) => { setLabPhone(e.target.value); setPhoneError(''); }}
+                  onChange={(e) => {
+                    setLabPhone(e.target.value);
+                    setPhoneError('');
+                    if (!leadStartedRef.current) {
+                      leadStartedRef.current = true;
+                      trackEvent('lead_started', { source: 'lab_calculator' });
+                    }
+                  }}
                   placeholder="+996 ___ __ __ __"
                   className="input-field text-sm pl-10 w-full"
                 />
