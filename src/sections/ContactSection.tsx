@@ -1,10 +1,9 @@
 import { useState, useRef, useLayoutEffect } from 'react';
-import { trackEvent, getUtmParams, getUtmParamsCamel } from '../lib/analytics';
-import { submitLead } from '../lib/submitLead';
+import { trackEvent, getUtmParams } from '../lib/analytics';
 import { motion, AnimatePresence } from 'motion/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { MessageCircle, Phone, MapPin, Clock, Mail, Calendar, Shield, User, Send, ExternalLink, AlertCircle } from 'lucide-react';
+import { MessageCircle, Phone, MapPin, Clock, Mail, Calendar, Shield, User, Send, ExternalLink } from 'lucide-react';
 import ConsentCheckbox from '../components/ConsentCheckbox';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -19,8 +18,6 @@ const ContactSection = () => {
   const [phoneError, setPhoneError] = useState('');
   const [consentChecked, setConsentChecked] = useState(false);
   const [consentError, setConsentError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [submitError, setSubmitError] = useState('');
   const leadStartedRef = useRef(false);
 
   useLayoutEffect(() => {
@@ -62,7 +59,7 @@ const ContactSection = () => {
     return () => ctx.revert();
   }, []);
 
-  const handleCallback = async () => {
+  const handleCallback = () => {
     if (!phone.trim()) {
       setPhoneError('Введите номер телефона');
       return;
@@ -73,46 +70,14 @@ const ContactSection = () => {
     }
     setPhoneError('');
     setConsentError('');
-    setSubmitError('');
-    setLoading(true);
-
-    try {
-      const res = await submitLead({
-        name: name.trim() || undefined,
-        phone: phone.trim(),
-        weight: 0,
-        volume: 0,
-        deliveryType: 'standard',
-        source: 'prolife_site',
-        leadEntryPoint: 'contact_form',
-        ...getUtmParamsCamel(),
-        website: '',
-      });
-
-      if (res.ok) {
-        trackEvent('lead_submitted', { source: 'contact_form', ...getUtmParams() });
-        const parts = [
-          'Здравствуйте! Прошу перезвонить.',
-          name.trim() ? `Имя: ${name.trim()}` : null,
-          `Номер: ${phone.trim()}`,
-        ].filter(Boolean);
-        const text = encodeURIComponent(parts.join('\n'));
-        window.open(`https://api.whatsapp.com/send?phone=996990111125&text=${text}`, '_blank', 'noopener,noreferrer');
-        return;
-      }
-
-      if (res.status === 400) {
-        setSubmitError('Проверьте данные и попробуйте ещё раз.');
-      } else if (res.status === 429) {
-        setSubmitError('Слишком много попыток. Попробуйте через минуту.');
-      } else {
-        setSubmitError('Ошибка сервера. Попробуйте ещё раз или напишите нам напрямую.');
-      }
-    } catch {
-      setSubmitError('Нет соединения. Проверьте интернет и попробуйте ещё раз.');
-    } finally {
-      setLoading(false);
-    }
+    trackEvent('lead_submitted', { source: 'contact_form', ...getUtmParams() });
+    const parts = [
+      'Здравствуйте! Прошу перезвонить.',
+      name.trim() ? `Имя: ${name.trim()}` : null,
+      `Номер: ${phone.trim()}`,
+    ].filter(Boolean);
+    const text = encodeURIComponent(parts.join('\n'));
+    window.open(`https://api.whatsapp.com/send?phone=996990111125&text=${text}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -208,38 +173,14 @@ const ContactSection = () => {
                   onChange={(v) => { setConsentChecked(v); if (v) setConsentError(''); }}
                   error={consentError}
                 />
-                <AnimatePresence>
-                  {submitError && (
-                    <motion.div
-                      className="flex items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2"
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.15 }}
-                    >
-                      <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                      <p className="text-xs text-red-300 leading-relaxed">{submitError}</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
                 <motion.button
                   onClick={handleCallback}
-                  disabled={loading}
-                  className="btn-primary w-full text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="btn-primary w-full text-sm"
                   whileTap={{ scale: 0.97 }}
                   transition={{ duration: 0.12 }}
                 >
-                  {loading ? (
-                    <>
-                      <span className="w-4 h-4 mr-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Отправка...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4 mr-2" />
-                      Отправить заявку
-                    </>
-                  )}
+                  <Send className="w-4 h-4 mr-2" />
+                  Отправить заявку
                 </motion.button>
               </div>
             </div>

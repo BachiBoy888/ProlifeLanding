@@ -170,11 +170,16 @@ const Calculator = () => {
   };
 
   const handleSendRequest = async () => {
+    if (!contact.name.trim()) {
+      setSubmitError('Пожалуйста, укажите ваше имя.');
+      return;
+    }
     if (!consentChecked) {
       setConsentError('Необходимо согласие на обработку персональных данных');
       return;
     }
     setConsentError('');
+    setSubmitError('');
     setLoading(true);
     setSubmitError('');
 
@@ -182,7 +187,7 @@ const Calculator = () => {
     const pkg = selectedPackage;
 
     const payload: LeadPayload = {
-      name: contact.name.trim() || undefined,
+      name: contact.name.trim(),
       phone: contact.phone.trim(),
       company: contact.company.trim() || undefined,
       weight: parseFloat(form.weight) || 0,
@@ -440,7 +445,7 @@ const Calculator = () => {
                 <div className="grid grid-cols-2 gap-2.5 mb-3">
                   <div>
                     <label className="mono-label text-[#C8D0D8] flex items-center gap-1 mb-1.5">
-                      <User className="w-3 h-3" />Имя
+                      <User className="w-3 h-3" />Имя *
                     </label>
                     <input
                       type="text"
@@ -497,7 +502,7 @@ const Calculator = () => {
 
                 <button
                   onClick={handleSendRequest}
-                  disabled={!contact.phone.trim() || loading}
+                  disabled={!contact.name.trim() || !contact.phone.trim() || loading}
                   className="btn-primary w-full py-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (

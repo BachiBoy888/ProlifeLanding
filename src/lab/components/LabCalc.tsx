@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { MessageCircle, Check, Zap } from 'lucide-react';
-import { trackEvent, getUtmParams } from '../../lib/analytics';
+import { MessageCircle, Check, Zap, Phone, AlertCircle } from 'lucide-react';
+import { trackEvent, getUtmParams, getUtmParamsCamel } from '../../lib/analytics';
+import { submitLead } from '../../lib/submitLead';
+import ConsentCheckbox from '../../components/ConsentCheckbox';
 
 const MIN_PRICE = 150;
 
@@ -36,6 +38,12 @@ const LabCalc = () => {
   const [weight, setWeight] = useState<WeightId>('sm');
   const [city, setCity] = useState('Гуанчжоу');
   const [pkg, setPkg] = useState<PackageId>('standard');
+  const [labPhone, setLabPhone] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+  const [consentChecked, setConsentChecked] = useState(false);
+  const [consentError, setConsentError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const selectedWeight = WEIGHT_RANGES.find((w) => w.id === weight)!;
   const selectedCity = CITIES.find((c) => c.id === city)!;
@@ -51,6 +59,53 @@ const LabCalc = () => {
     `Ориентировочная стоимость: ~$${price}`
   );
   const waUrl = `https://api.whatsapp.com/send?phone=996990111125&text=${waText}`;
+
+  const handleSubmit = async () => {
+    if (!labPhone.trim() || labPhone.trim().length < 5) {
+      setPhoneError('Введите номер телефона');
+      return;
+    }
+    if (!consentChecked) {
+      setConsentError('Необходимо согласие на обработку данных');
+      return;
+    }
+    setPhoneError('');
+    setConsentError('');
+    setSubmitError('');
+    setLoading(true);
+
+    try {
+      const res = await submitLead({
+        name: labPhone.trim(),
+        phone: labPhone.trim(),
+        weight: selectedWeight.mid,
+        volume: parseFloat((selectedWeight.mid / 250).toFixed(3)),
+        deliveryType: pkg,
+        originCity: city,
+        estimatedPrice: price,
+        estimatedCurrency: 'USD',
+        source: 'prolife_site',
+        leadEntryPoint: 'lab_calculator',
+        ...getUtmParamsCamel(),
+        website: '',
+      });
+
+      if (res.ok) {
+        trackEvent('calculator_completed', { package: pkg, city, weight_range: weight, estimated_price: price });
+        trackEvent('lead_submitted', { source: 'lab_calculator', ...getUtmParams() });
+        window.open(waUrl, '_blank', 'noopener,noreferrer');
+        return;
+      }
+
+      if (res.status === 400) setSubmitError('Проверьте данные и попробуйте ещё раз.');
+      else if (res.status === 429) setSubmitError('Слишком много попыток. Попробуйте через минуту.');
+      else setSubmitError('Ошибка сервера. Попробуйте ещё раз.');
+    } catch {
+      setSubmitError('Нет соединения. Проверьте интернет и попробуйте ещё раз.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section id="calculator" className="relative px-6 py-16 lg:py-24">
@@ -228,29 +283,72 @@ const LabCalc = () => {
               </p>
             </div>
 
-            {/* CTA */}
-            <motion.a
-              href={waUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => {
-                trackEvent('calculator_completed', {
-                  package: pkg,
-                  city,
-                  weight_range: weight,
-                  estimated_price: price,
-                });
-                trackEvent('lead_submitted', { source: 'lab_calculator', ...getUtmParams() });
-              }}
-              className="flex items-center justify-center gap-3 w-full py-4 rounded-xl font-display font-semibold text-[#050608] bg-[#4A90A4] text-base"
-              style={{ boxShadow: '0 0 40px rgba(74,144,164,0.45), 0 0 80px rgba(74,144,164,0.15)' }}
-              whileHover={{ scale: 1.02, boxShadow: '0 0 60px rgba(74,144,164,0.6), 0 0 100px rgba(74,144,164,0.22)' }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ duration: 0.15 }}
-            >
-              <MessageCircle className="w-5 h-5 shrink-0" />
-              Получить точный расчёт в WhatsApp
-            </motion.a>
+            {/* Phone input + CTA */}
+            <div className="space-y-3">
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5a6070]" />
+                <input
+                  type="tel"
+                  value={labPhone}
+                  onChange={(e) => { setLabPhone(e.target.value); setPhoneError(''); }}
+                  placeholder="+996 ___ __ __ __"
+                  className="input-field text-sm pl-10 w-full"
+                />
+              </div>
+              <AnimatePresence>
+                {phoneError && (
+                  <motion.p
+                    className="text-xs text-red-400"
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    {phoneError}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+              <ConsentCheckbox
+                checked={consentChecked}
+                onChange={(v) => { setConsentChecked(v); if (v) setConsentError(''); }}
+                error={consentError}
+              />
+              <AnimatePresence>
+                {submitError && (
+                  <motion.div
+                    className="flex items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2"
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                    <p className="text-xs text-red-300 leading-relaxed">{submitError}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <motion.button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="flex items-center justify-center gap-3 w-full py-4 rounded-xl font-display font-semibold text-[#050608] bg-[#4A90A4] text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ boxShadow: '0 0 40px rgba(74,144,164,0.45), 0 0 80px rgba(74,144,164,0.15)' }}
+                whileHover={{ scale: loading ? 1 : 1.02, boxShadow: '0 0 60px rgba(74,144,164,0.6), 0 0 100px rgba(74,144,164,0.22)' }}
+                whileTap={{ scale: loading ? 1 : 0.97 }}
+                transition={{ duration: 0.15 }}
+              >
+                {loading ? (
+                  <>
+                    <span className="w-5 h-5 border-2 border-[#050608]/30 border-t-[#050608] rounded-full animate-spin shrink-0" />
+                    Отправка...
+                  </>
+                ) : (
+                  <>
+                    <MessageCircle className="w-5 h-5 shrink-0" />
+                    Получить точный расчёт в WhatsApp
+                  </>
+                )}
+              </motion.button>
+            </div>
 
             <div className="flex items-center justify-center gap-6">
               <span className="flex items-center gap-1.5 text-[11px] text-[#A9B1BA]">
