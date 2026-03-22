@@ -70,7 +70,7 @@ const ContactSection = () => {
     }
     setPhoneError('');
     setConsentError('');
-    trackEvent('lead_submitted', { source: 'contact_form', ...getUtmParams() });
+    trackEvent('whatsapp_opened', { source: 'contact_form', ...getUtmParams() });
     const parts = [
       'Здравствуйте! Прошу перезвонить.',
       name.trim() ? `Имя: ${name.trim()}` : null,
@@ -103,7 +103,7 @@ const ContactSection = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary"
-                onClick={() => trackEvent('cta_clicked', { location: 'contact_whatsapp' })}
+                onClick={() => { trackEvent('whatsapp_opened', { source: 'contact' }); trackEvent('cta_clicked', { location: 'contact_whatsapp' }); }}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ duration: 0.12 }}

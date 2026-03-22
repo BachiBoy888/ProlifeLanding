@@ -15,6 +15,7 @@ import {
   Plane,
   Layers,
 } from 'lucide-react';
+import { trackEvent } from '../lib/analytics';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -202,6 +203,7 @@ const ServicesSection = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center text-sm text-[#4A90A4] hover:text-[#F4F6F8] transition-colors"
+                  onClick={() => trackEvent('whatsapp_opened', { source: 'services' })}
                 >
                   Подробнее
                   <ArrowRight className="w-4 h-4 ml-1" />

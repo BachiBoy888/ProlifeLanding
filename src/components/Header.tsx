@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X, MessageCircle } from 'lucide-react';
+import { trackEvent } from '../lib/analytics';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -80,6 +81,7 @@ const Header = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-outline text-sm py-2.5 px-4"
+                onClick={() => trackEvent('whatsapp_opened', { source: 'header' })}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ duration: 0.12 }}
@@ -129,6 +131,7 @@ const Header = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary mt-4"
+                onClick={() => trackEvent('whatsapp_opened', { source: 'header' })}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ duration: 0.12 }}

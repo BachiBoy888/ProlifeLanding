@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight, Shield, Package, Thermometer, Anchor } from 'lucide-react';
+import { trackEvent } from '../lib/analytics';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -127,6 +128,7 @@ const SafetySection = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="btn-outline text-sm inline-flex"
+            onClick={() => trackEvent('whatsapp_opened', { source: 'safety' })}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
             transition={{ duration: 0.12 }}

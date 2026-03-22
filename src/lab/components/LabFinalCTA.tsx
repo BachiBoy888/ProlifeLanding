@@ -42,7 +42,7 @@ const LabFinalCTA = () => {
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => trackEvent('cta_clicked', { location: 'lab_final_whatsapp' })}
+              onClick={() => { trackEvent('whatsapp_opened', { source: 'lab_final' }); trackEvent('cta_clicked', { location: 'lab_final_whatsapp' }); }}
               className="flex items-center gap-3 px-8 py-4 rounded-xl font-display font-semibold text-[#050608] bg-[#4A90A4] text-base w-full sm:w-auto justify-center"
               style={{ boxShadow: '0 0 50px rgba(74,144,164,0.5), 0 0 100px rgba(74,144,164,0.2)' }}
               whileHover={{ scale: 1.04, boxShadow: '0 0 70px rgba(74,144,164,0.65), 0 0 120px rgba(74,144,164,0.3)' }}
