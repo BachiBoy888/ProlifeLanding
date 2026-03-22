@@ -191,10 +191,6 @@ const ContactSection = () => {
                 <Calendar className="w-4 h-4 text-[#4A90A4]" />
                 <span>С 2015 года</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-[#A9B1BA]">
-                <Shield className="w-4 h-4 text-[#4A90A4]" />
-                <span>Страхование включено</span>
-              </div>
             </div>
           </div>
 

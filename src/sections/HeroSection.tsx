@@ -173,7 +173,7 @@ const HeroSection = () => {
           className="mb-4 lg:mb-8 lg:max-w-[44vw]"
         >
           <p className="mono-label text-[#A9B1BA]">
-            В БИШКЕК · ТАМОЖНЯ ВКЛЮЧЕНА · ЛИЧНЫЙ МЕНЕДЖЕР 24/7
+            В БИШКЕК · ЛИЧНЫЙ МЕНЕДЖЕР 24/7
           </p>
           <div className="flex items-center gap-2 mt-3">
             <span className="w-2 h-2 rounded-full bg-green-400 shrink-0" />

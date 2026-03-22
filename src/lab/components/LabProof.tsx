@@ -113,7 +113,6 @@ const LabProof = () => {
             value={98}
             suffix="%"
             label="Без потерь и порчи"
-            sub="страховка включена"
             delay={0.05}
           />
 
