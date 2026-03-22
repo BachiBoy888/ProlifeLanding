@@ -3,7 +3,7 @@ import { trackEvent, getUtmParams } from '../lib/analytics';
 import { motion, AnimatePresence } from 'motion/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { MessageCircle, Phone, MapPin, Clock, Mail, Calendar, Shield, User, Send, ExternalLink } from 'lucide-react';
+import { MessageCircle, Phone, MapPin, Clock, Mail, Calendar, User, Send, ExternalLink } from 'lucide-react';
 import ConsentCheckbox from '../components/ConsentCheckbox';
 
 gsap.registerPlugin(ScrollTrigger);
