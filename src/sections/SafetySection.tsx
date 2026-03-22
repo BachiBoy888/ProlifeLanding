@@ -101,7 +101,7 @@ const SafetySection = () => {
           </p>
           
           <p className="text-[#A9B1BA] text-base lg:text-lg mb-6 leading-relaxed">
-            Работаем с хрупким, тяжёлым и ценным грузом. Страховка включена в базовый тариф.
+            Работаем с хрупким, тяжёлым и ценным грузом.
           </p>
 
           <div className="grid grid-cols-2 gap-3 mb-8">

@@ -286,7 +286,7 @@ const LabCalc = () => {
                 {selectedPkg.name} · {selectedPkg.days} · {city}
               </p>
               <p className="font-mono text-[10px] text-[#A9B1BA]/50 mt-1">
-                * предварительный расчёт, таможня включена
+                * предварительный расчёт
               </p>
             </div>
 

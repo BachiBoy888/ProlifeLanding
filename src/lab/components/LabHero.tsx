@@ -67,7 +67,7 @@ const LabHero = ({ onCalcClick }: LabHeroProps) => {
           transition={{ duration: 0.5, delay: 0.28 }}
           className="font-mono text-[#A9B1BA] text-xs tracking-widest mb-8"
         >
-          В БИШКЕК · ТАМОЖНЯ ВКЛЮЧЕНА · ЛИЧНЫЙ МЕНЕДЖЕР 24/7
+          В БИШКЕК · ЛИЧНЫЙ МЕНЕДЖЕР 24/7
         </motion.p>
 
         {/* CTAs */}
