@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
-import { trackEvent, getUtmParams } from '../lib/analytics';
+import { trackEvent, getUtmParams, getUtmParamsCamel } from '../lib/analytics';
+import { submitLead, type LeadPayload } from '../lib/submitLead';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import {
@@ -82,8 +83,6 @@ interface ContactData {
   email: string;
   note: string;
 }
-
-const API_URL = import.meta.env.VITE_API_URL ?? '';
 
 const Calculator = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -179,42 +178,29 @@ const Calculator = () => {
     setLoading(true);
     setSubmitError('');
 
-    const result = calcResult();
+    const calcRes = calcResult();
     const pkg = selectedPackage;
 
-    const payload = {
-      // Контактные данные
+    const payload: LeadPayload = {
       name: contact.name.trim() || undefined,
       phone: contact.phone.trim(),
       company: contact.company.trim() || undefined,
-      email: contact.email.trim() || undefined,
-      note: contact.note.trim() || undefined,
-
-      // Параметры груза
-      weight: parseFloat(form.weight) || undefined,
-      volume: parseFloat(form.volume) || undefined,
-      deliveryType: form.packageId,          // 'economy' | 'standard' | 'premium'
+      weight: parseFloat(form.weight) || 0,
+      volume: parseFloat(form.volume) || 0,
+      deliveryType: form.packageId,
       originCity: form.city,
-
-      // Предварительная оценка (фронтенд-расчёт)
-      estimatedPrice: result.price,
+      estimatedPrice: calcRes.price,
       estimatedCurrency: 'USD',
       estimatedDaysMin: pkg.daysMin,
       estimatedDaysMax: pkg.daysMax,
-
-      // Honeypot — всегда пустая строка
+      source: 'prolife_site',
+      leadEntryPoint: 'calculator',
+      ...getUtmParamsCamel(),
       website: '',
     };
 
     try {
-      const res = await fetch(`${API_URL}/api/leads`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Source': 'prolife_site',
-        },
-        body: JSON.stringify(payload),
-      });
+      const res = await submitLead(payload);
 
       if (res.ok) {
         trackEvent('lead_submitted', { source: 'calculator', ...getUtmParams() });
@@ -222,11 +208,10 @@ const Calculator = () => {
         return;
       }
 
-      // Обработка конкретных статусов
       if (res.status === 400) {
         setSubmitError('Проверьте заполненные данные и попробуйте ещё раз.');
       } else if (res.status === 429) {
-        setSubmitError('Слишком много запросов. Пожалуйста, подождите немного и повторите.');
+        setSubmitError('Слишком много попыток. Попробуйте через минуту.');
       } else {
         setSubmitError('Ошибка на сервере. Попробуйте ещё раз или напишите нам напрямую.');
       }

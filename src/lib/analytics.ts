@@ -27,6 +27,21 @@ export function getUtmParams(): Record<string, string> {
   }
 }
 
+export function getUtmParamsCamel(): {
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmContent?: string;
+} {
+  const utm = getUtmParams();
+  const result: Record<string, string> = {};
+  if (utm.utm_source)   result.utmSource   = utm.utm_source;
+  if (utm.utm_medium)   result.utmMedium   = utm.utm_medium;
+  if (utm.utm_campaign) result.utmCampaign = utm.utm_campaign;
+  if (utm.utm_content)  result.utmContent  = utm.utm_content;
+  return result;
+}
+
 export function initAnalytics(): void {
   if (initialized) return;
   const apiKey = import.meta.env.VITE_AMPLITUDE_API_KEY as string | undefined;
